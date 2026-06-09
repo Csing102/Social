@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WattzApp Auth Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-[#111b21] h-screen text-[#e9edef] flex items-center justify-center font-sans">
+    <div class="bg-[#222e35] p-8 rounded-xl w-full max-w-md shadow-2xl border border-[#374248]">
+        <div class="text-center mb-6">
+            <div class="text-4xl mb-2">🟢</div>
+            <h2 class="text-2xl font-bold">Welcome to WattzApp</h2>
+            <p class="text-sm text-[#8696a0] mt-1" id="auth-title">Sign in to your account</p>
+        </div>
+
+        <div class="space-y-4" id="form-container">
+            <input type="text" id="auth-name" placeholder="Full Name" class="hidden w-full bg-[#2a3942] border-0 rounded-lg p-3 text-sm placeholder-[#8696a0] text-white focus:ring-2 focus:ring-[#00a884] focus:outline-none">
+            <input type="text" id="auth-username" placeholder="Username" class="hidden w-full bg-[#2a3942] border-0 rounded-lg p-3 text-sm placeholder-[#8696a0] text-white focus:ring-2 focus:ring-[#00a884] focus:outline-none">
+            <input type="email" id="auth-email" placeholder="Email address" class="w-full bg-[#2a3942] border-0 rounded-lg p-3 text-sm placeholder-[#8696a0] text-white focus:ring-2 focus:ring-[#00a884] focus:outline-none">
+            <input type="password" id="auth-password" placeholder="Password token code" class="w-full bg-[#2a3942] border-0 rounded-lg p-3 text-sm placeholder-[#8696a0] text-white focus:ring-2 focus:ring-[#00a884] focus:outline-none">
+            
+            <button onclick="handleFormSubmissionPipeline()" id="primary-action-btn" class="w-full bg-[#00a884] text-black font-semibold p-3 rounded-lg hover:bg-[#008f72] transition duration-200 text-sm">Sign In</button>
+        </div>
+
+        <div class="text-center mt-6 text-sm text-[#8696a0]">
+            <span id="toggle-context-label">New to WattzApp?</span>
+            <button onclick="switchAuthenticationView()" id="toggle-action-link" class="text-[#00a884] hover:underline ml-1 bg-transparent border-none cursor-pointer">Create account</button>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = "https://iblzdkqbnvircxtxjway.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlibHpka3FibnZpcmN4dHhqd2F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTAxNDksImV4cCI6MjA5NjUyNjE0OX0.z1aa2tb8ePlK_sB_kgSO4IjGjzjoBONBgez_4XiwLAY";
+        const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let activeAuthMode = "LOGIN";
+
+        window.switchAuthenticationView = function() {
+            const isLogin = activeAuthMode === "LOGIN";
+            activeAuthMode = isLogin ? "REGISTER" : "LOGIN";
+            
+            document.getElementById("auth-title").innerText = isLogin ? "Create your application credentials" : "Sign in to your account";
+            document.getElementById("primary-action-btn").innerText = isLogin ? "Register Now" : "Sign In";
+            document.getElementById("toggle-context-label").innerText = isLogin ? "Already have a profile?" : "New to WattzApp?";
+            document.getElementById("toggle-action-link").innerText = isLogin ? "Sign In instead" : "Create account";
+            
+            document.getElementById("auth-name").classList.toggle("hidden", !isLogin);
+            document.getElementById("auth-username").classList.toggle("hidden", !isLogin);
+        }
+
+        window.handleFormSubmissionPipeline = async function() {
+            const email = document.getElementById("auth-email").value;
+            const password = document.getElementById("auth-password").value;
+            
+            if(activeAuthMode === "LOGIN") {
+                const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+                if(error) alert(error.message);
+                else window.location.href = "chat.html";
+            } else {
+                const name = document.getElementById("auth-name").value;
+                const username = document.getElementById("auth-username").value;
+                
+                const { data, error } = await _sb.auth.signUp({ email, password });
+                if(error) return alert(error.message);
+                
+                if(data?.user) {
+                    await _sb.from("profiles").insert([{
+                        id: data.user.id,
+                        name,
+                        username,
+                        email,
+                        password_hash: "managed_by_supabase_auth"
+                    }]);
+                    alert("Registration successful! Proceeding to session entry.");
+                    window.location.href = "chat.html";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
