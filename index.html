@@ -79,17 +79,17 @@
                         <p id="user-username-display" class="text-[11px] text-[#8696a0] truncate"></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4 text-[#aebac1]">
-                    <button onclick="createNewChannel()" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                    <button onclick="createNewPrivateChat()" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></button>
-                    <button onclick="terminateSession()" class="p-2 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+                <div class="flex items-center gap-2 text-[#aebac1]">
+                    <button onclick="openModal('create-channel-modal')" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all" title="Create Group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                    <button onclick="openModal('create-private-modal')" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all" title="New DM"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></button>
+                    <button onclick="terminateSession()" class="p-2 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
                 </div>
             </header>
             
             <div class="p-3 bg-[#111b21] border-b border-[#222e35]/30">
                 <div class="relative flex items-center">
                     <span class="absolute left-3.5 text-[#8696a0]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-                    <input type="text" placeholder="Search operational interface nodes..." class="w-full bg-[#202c33] text-xs rounded-xl pl-10 pr-4 py-2.5 text-[#e9edef] placeholder-[#8696a0] focus:outline-none focus:ring-1 focus:ring-[#222e35]">
+                    <input type="text" id="sidebar-search" placeholder="Search chats..." class="w-full bg-[#202c33] text-xs rounded-xl pl-10 pr-4 py-2.5 text-[#e9edef] placeholder-[#8696a0] focus:outline-none focus:ring-1 focus:ring-[#222e35]" oninput="filterSidebarChats(this.value)">
                 </div>
             </div>
             
@@ -102,14 +102,14 @@
                     <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover border border-[#222e35]/60 flex-shrink-0">
                     <div class="min-w-0">
                         <h2 id="active-room-title" class="text-sm font-semibold text-white tracking-wide truncate">Select an operation context node</h2>
-                        <div id="active-room-status" class="text-[11px] font-medium tracking-wide mt-0.5 min-h-[15px] flex items-center gap-1.5"></div>
+                        <div id="active-room-status" class="text-[11px] font-medium tracking-wide mt-0.5 min-h-[15px] flex items-center gap-1.5 text-[#8696a0]"></div>
                     </div>
                 </div>
                 
                 <div id="call-actions" class="hidden flex items-center gap-2 text-[#aebac1]">
                     <button onclick="createNewCall('audio')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
                     <button onclick="createNewCall('video')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
-                    <button onclick="promptDeleteCurrentChat()" class="p-2.5 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    <button onclick="openModal('delete-chat-confirm-modal')" class="p-2.5 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all" title="Delete Entire Thread"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
             </header>
 
@@ -127,7 +127,7 @@
 
                 <div class="flex-1 relative">
                     <input type="text" id="msg-field" placeholder="Type data message stream..." class="chat-input w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#222e35]/80 transition-all" oninput="handleInputFieldChange(this)">
-                    <div id="username-suggestions" class="hidden absolute bottom-full mb-2 left-0 w-full bg-[#233138] rounded-xl shadow-2xl border border-[#222e35] max-h-40 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30"></div>
+                    <div id="username-suggestions" class="hidden absolute bottom-full mb-2 left-0 w-full bg-[#233138] rounded-xl shadow-2xl border border-[#222e35] max-h-40 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30 z-50"></div>
                 </div>
                 <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="flex-none p-2.5 text-[#aebac1] hover:bg-[#2a3942] hover:text-white rounded-xl transition-all flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button>
             </footer>
@@ -135,6 +135,66 @@
     </div>
 
     <div id="notification-container" class="fixed top-4 right-4 z-[100] space-y-3 w-80"></div>
+
+    <div id="create-channel-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
+            <h3 class="text-sm font-bold text-white tracking-wide">Establish New Group Node</h3>
+            <input type="text" id="new-channel-title" placeholder="Group Channel Name" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#00a884]">
+            <div class="flex justify-end gap-2 text-xs pt-2">
+                <button onclick="closeModal('create-channel-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
+                <button onclick="executeChannelCreation()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Create Group</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-private-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
+            <h3 class="text-sm font-bold text-white tracking-wide">Open Secure Direct Link</h3>
+            <input type="text" id="new-private-handle" placeholder="Target Handle (@username)" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#00a884]">
+            <div class="flex justify-end gap-2 text-xs pt-2">
+                <button onclick="closeModal('create-private-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
+                <button onclick="executePrivateChatCreation()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Connect Node</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-chat-confirm-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-red-500/20 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <h3 class="text-sm font-bold text-white">Purge Communication Thread?</h3>
+            <p class="text-xs text-[#8696a0]">This action wipes the channel context node entirely from the global database clusters.</p>
+            <div class="flex justify-center gap-3 text-xs pt-2">
+                <button onclick="closeModal('delete-chat-confirm-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl font-medium">Cancel</button>
+                <button onclick="executeCurrentChatDeletion()" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all">Purge Node</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
+            <h3 class="text-sm font-bold text-white tracking-wide">Modify Dispatched Payload</h3>
+            <input type="text" id="edit-message-input" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white focus:outline-none border border-transparent focus:border-[#00a884]">
+            <input type="hidden" id="edit-message-target-id">
+            <div class="flex justify-end gap-2 text-xs pt-2">
+                <button onclick="closeModal('edit-message-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
+                <button onclick="executeMessagePayloadUpdate()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Save Revision</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="unpost-message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-red-500/20 space-y-4 shadow-2xl text-center">
+            <h3 class="text-sm font-bold text-white">Unsend Data Packet?</h3>
+            <p class="text-xs text-[#8696a0]">This will permanently drop the text and attachments inside this specific packet frame.</p>
+            <input type="hidden" id="unpost-message-target-id">
+            <div class="flex justify-center gap-3 text-xs pt-2">
+                <button onclick="closeModal('unpost-message-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
+                <button onclick="executeMessageUnpost()" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600">Unsend Payload</button>
+            </div>
+        </div>
+    </div>
 
     <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
         <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-md border border-[#222e35] space-y-5 shadow-2xl overflow-y-auto custom-scroll max-h-[90vh]">
@@ -171,12 +231,11 @@
     <div id="media-search-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
         <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-xl border border-[#222e35] space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
-                <h3 id="media-search-title" class="text-lg font-bold text-white"></h3>
-                <button onclick="closeModal('media-search-modal')" class="text-[#8696a0] hover:text-white">&times;</button>
+                <h3 id="media-search-title" class="text-sm font-bold text-white"></h3>
+                <button onclick="closeModal('media-search-modal')" class="text-[#8696a0] hover:text-white text-xl">&times;</button>
             </div>
             <div class="relative">
-                <input type="text" id="media-search-input" placeholder="Search operational interface nodes..." class="w-full bg-[#202c33] text-sm rounded-xl px-4 py-3 text-[#e9edef] placeholder-[#8696a0] border border-[#222e35] focus:outline-none">
-                <button onclick="performMediaSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#00a884] text-black text-xs font-semibold px-4 py-1.5 rounded-lg hover:bg-[#008f72]">Search</button>
+                <input type="text" id="media-search-input" placeholder="Query interface node arrays..." class="w-full bg-[#202c33] text-xs rounded-xl px-4 py-3 text-[#e9edef] placeholder-[#8696a0] border border-[#222e35] focus:outline-none">
             </div>
             <div id="media-search-results" class="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto custom-scroll p-1"></div>
         </div>
@@ -210,7 +269,7 @@
             <div id="video-streams" class="hidden w-full flex-1 grid grid-cols-2 gap-4 bg-[#111b21] rounded-2xl p-4 border border-[#222e35] shadow-inner relative">
                 <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40">
                     <video id="remote-video-track" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <span id="remote-track-label" class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Remote Stream Node</span>
+                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Remote Stream Node</span>
                 </div>
                 <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40 transition-all duration-300" id="local-video-container">
                     <video id="local-video-track" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
@@ -247,6 +306,7 @@
         let localProfile = null;
         let selectedChannel = null;
         let allProfilesList = [];
+        let allChannelsList = [];
         let audioRecorderInstance = null;
         let audioCapturedChunks = [];
         let globalMsgSubscription = null;
@@ -260,6 +320,7 @@
         let isCallInitiator = false;
         let targetedCallPeerId = null;
         let activeRTT_SpyHandle = null;
+        let activeMediaSearchType = "gif";
 
         const rtcConfiguration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
         const GIPHY_OPERATIONAL_KEY = "tH2BXmDEeZaOLVKx5epUQxvAsbVtKhnT";
@@ -268,8 +329,8 @@
             window.submitAuthForm = submitAuthForm;
             window.toggleAuthMode = toggleAuthMode;
             window.terminateSession = terminateSession;
-            window.createNewChannel = createNewChannel;
-            window.createNewPrivateChat = createNewPrivateChat;
+            window.executeChannelCreation = executeChannelCreation;
+            window.executePrivateChatCreation = executePrivateChatCreation;
             window.openModal = openModal;
             window.closeModal = closeModal;
             window.toggleElement = toggleElement;
@@ -284,7 +345,7 @@
             window.terminateCall = terminateCall;
             window.acceptIncomingCall = acceptIncomingCall;
             window.rejectIncomingCall = rejectIncomingCall;
-            window.promptDeleteCurrentChat = promptDeleteCurrentChat;
+            window.executeCurrentChatDeletion = executeCurrentChatDeletion;
             window.unpostPostedMessage = unpostPostedMessage;
             window.modifyPostedMessage = modifyPostedMessage;
             window.handleInputFieldChange = handleInputFieldChange;
@@ -293,6 +354,9 @@
             window.triggerInlineAudioPlayback = triggerInlineAudioPlayback;
             window.launchImagePreviewModal = launchImagePreviewModal;
             window.createNewCall = createNewCall;
+            window.executeMessagePayloadUpdate = executeMessagePayloadUpdate;
+            window.executeMessageUnpost = executeMessageUnpost;
+            window.filterSidebarChats = filterSidebarChats;
 
             const { data: { session } } = await _client.auth.getSession();
             if (session) {
@@ -304,7 +368,6 @@
             setupInputMessageListener();
         });
 
-        // Application Controller Logic
         async function bootAppInterfaceWorkspace() {
             renderInterfaceLayout("APP");
             await fetchUserIdentityMetadata();
@@ -340,7 +403,6 @@
                     await _client.from("profiles").insert([{
                         id: data.user.id, name, username, email, profile_picture: "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg"
                     }]);
-                    alert("Account setup complete!");
                     localUser = data.user;
                     await bootAppInterfaceWorkspace();
                 }
@@ -349,10 +411,10 @@
 
         function toggleAuthMode() {
             authState = authState === "LOGIN" ? "REGISTER" : "LOGIN";
-            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your dynamic identity node context" : "Create your unique application user profile cluster";
+            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your database cluster identity node credentials" : "Create your unique application user profile cluster";
             document.getElementById("auth-btn").innerText = authState === "LOGIN" ? "Sign In" : "Register Profile";
             document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New operational user node?" : "Already have a profile?";
-            document.getElementById("auth-toggle-link").innerText = authState === "LOGIN" ? "Create account" : "Sign in instead";
+            document.getElementById("auth-toggle-link").innerText = authState === "LOGIN" ? "Sign in instead" : "Create account";
             document.getElementById("auth-name").classList.toggle("hidden", authState === "LOGIN");
             document.getElementById("auth-username").classList.toggle("hidden", authState === "LOGIN");
         }
@@ -424,7 +486,6 @@
         }
 
         async function confirmAccountDeletion() {
-            if(!confirm("Destroy account profile? All messages will be dropped.")) return;
             await _client.from("profiles").delete().eq("id", localUser.id);
             terminateSession();
         }
@@ -434,7 +495,7 @@
             if(!container) return;
 
             const { data: channels } = await _client.from("channels").select("*").order("created_at", { ascending: false });
-            container.innerHTML = "";
+            allChannelsList = [];
 
             channels?.forEach(room => {
                 if(!room.is_group) {
@@ -443,15 +504,27 @@
                     
                     const peerId = userTokens.find(id => id !== localUser.id);
                     const peerProfile = allProfilesList.find(p => p.id === peerId);
-                    room._displayName = peerProfile ? `${peerProfile.name} (@${peerProfile.username})` : "Secured Node";
+                    room._displayName = peerProfile ? `${peerProfile.name}` : "Secured Node";
+                    room._displayHandle = peerProfile ? `@${peerProfile.username}` : "";
                     room._displayImg = peerProfile ? peerProfile.profile_picture : "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
                     room._isPrivate = true;
                 } else {
                     room._displayName = room.name;
+                    room._displayHandle = "[Group Hub]";
                     room._displayImg = "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
                     room._isPrivate = false;
                 }
+                allChannelsList.push(room);
+            });
 
+            renderSidebarChatsFromList(allChannelsList);
+        }
+
+        function renderSidebarChatsFromList(list) {
+            const container = document.getElementById("channels-list");
+            container.innerHTML = "";
+            
+            list.forEach(room => {
                 const elementNode = document.createElement("div");
                 elementNode.className = `flex items-center gap-3.5 p-4 cursor-pointer border-b border-[#222e35]/30 transition-all ${selectedChannel?.id === room.id ? 'bg-[#2a3942]' : 'hover:bg-[#202c33]/70'}`;
                 elementNode.onclick = () => mountActiveChatChannelTarget(room);
@@ -463,27 +536,41 @@
                             <h4 class="text-xs font-semibold text-[#e9edef] truncate tracking-wide">${room._displayName}</h4>
                             <span class="text-[10px] text-[#8696a0] font-medium">${room._isPrivate ? 'Direct' : 'Group'}</span>
                         </div>
+                        <p class="text-[11px] text-[#8696a0] truncate mt-0.5">${room._displayHandle}</p>
                     </div>
                 `;
                 container.appendChild(elementNode);
             });
         }
 
-        async function createNewChannel() {
-            const titleInput = prompt("Provide room name:");
+        function filterSidebarChats(query) {
+            const filtered = allChannelsList.filter(room => 
+                room._displayName.toLowerCase().includes(query.toLowerCase()) || 
+                room._displayHandle.toLowerCase().includes(query.toLowerCase())
+            );
+            renderSidebarChatsFromList(filtered);
+        }
+
+        async function executeChannelCreation() {
+            const titleInput = document.getElementById("new-channel-title").value.trim();
             if(!titleInput) return;
             await _client.from("channels").insert([{ name: titleInput, is_group: true }]);
+            closeModal('create-channel-modal');
+            document.getElementById("new-channel-title").value = "";
             await populateSidebarChannels();
         }
 
-        async function createNewPrivateChat() {
-            const handle = prompt("Enter username (@username):").replace("@", "").trim().toLowerCase();
+        async function executePrivateChatCreation() {
+            const handle = document.getElementById("new-private-handle").value.replace("@", "").trim().toLowerCase();
             const peer = allProfilesList.find(p => p.username === handle);
-            if(!peer) return showCustomNotification("Error", "Target user record missing.", "error");
+            if(!peer) return showCustomNotification("Error", "Target user node missing.", "error");
 
             const uniqueStringId = [localUser.id, peer.id].sort().join("--");
             const { data: activeRooms } = await _client.from("channels").select("*").eq("name", uniqueStringId).eq("is_group", false);
             
+            closeModal('create-private-modal');
+            document.getElementById("new-private-handle").value = "";
+
             if(activeRooms && activeRooms.length > 0) return mountActiveChatChannelTarget(activeRooms[0]);
 
             const { data: createdRoom } = await _client.from("channels").insert([{ name: uniqueStringId, is_group: false }]).select().single();
@@ -493,7 +580,7 @@
 
         async function mountActiveChatChannelTarget(channelObject) {
             selectedChannel = channelObject;
-            activeRTT_SpyHandle = null; // Clear spy lock on channel switch
+            activeRTT_SpyHandle = null; 
             document.getElementById("rtt-spy-audio-node").pause();
 
             if(!channelObject.is_group) {
@@ -511,10 +598,13 @@
 
             document.getElementById("active-room-status").innerHTML = `<span>●</span> Cloud Sync Online`;
             document.getElementById("input-dock").classList.remove("hidden");
-            document.getElementById("call-actions").classList.toggle("hidden", channelObject.is_group); 
+            document.getElementById("call-actions").classList.remove("hidden"); 
 
             await extractRenderMessagesFlowChain();
             await markMessagesAsReadInChannel(channelObject.id);
+            
+            // Re-render sidebars to lock in selection colors
+            renderSidebarChatsFromList(allChannelsList);
         }
 
         async function extractRenderMessagesFlowChain() {
@@ -565,14 +655,14 @@
                     <div class="px-3.5 py-2 rounded-2xl text-xs relative group ${isOutgoing ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none' : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}">
                         ${!isOutgoing && selectedChannel.is_group ? `<span class="block text-[10px] font-bold text-[#00a884] mb-0.5">${senderProfile?.name || 'External'}</span>` : ''}
                         ${attachmentMarkup}
-                        <p class="whitespace-pre-wrap break-words leading-relaxed text-slate-100">${message.is_deleted ? '<span class="text-[#8696a0] italic">Message unsent.</span>' : (message.content || '')}</p>
+                        <p class="whitespace-pre-wrap break-words leading-relaxed text-slate-100">${message.is_deleted ? '<span class="text-[#8696a0] italic text-[11px]">Message unsent</span>' : (message.content || '')}</p>
                         <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-[#8696a0] select-none">
                             <span>${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             ${visualReceiptMarker}
                         </div>
                         ${isOutgoing && !message.is_deleted ? `
                             <div class="absolute -top-3.5 right-2 hidden group-hover:flex items-center bg-[#233138] border border-[#222e35] rounded-xl p-0.5 shadow-xl z-20">
-                                <button onclick="modifyPostedMessage('${message.id}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-[#8696a0] hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                                <button onclick="modifyPostedMessage('${message.id}', '${escapeHtml(message.content || "")}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-[#8696a0] hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
                                 <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-red-400 hover:text-red-500" title="Delete Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         ` : ''}
@@ -590,6 +680,10 @@
             flowContainer.scrollTop = flowContainer.scrollHeight;
         }
 
+        function escapeHtml(string) {
+            return string.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+        }
+
         async function commitPayloadToDatabase(text, type = "text", url = null, rawAudioUrl = null, metadata = null) {
             if(!selectedChannel) return;
             const { error } = await _client.from("messages").insert([{
@@ -598,20 +692,43 @@
             if(error) showCustomNotification("Transmission Fault", error.message, "error");
         }
 
-        async function promptDeleteCurrentChat() {
-            if(!selectedChannel || !confirm(`Permanently wipe this chat thread? (Admins only)`)) return;
-            await _client.from("channels").delete().eq("id", selectedChannel.id);
-            terminateSession();
+        function executeCurrentChatDeletion() {
+            if(!selectedChannel) return;
+            _client.from("channels").delete().eq("id", selectedChannel.id).then(() => {
+                closeModal('delete-chat-confirm-modal');
+                selectedChannel = null;
+                document.getElementById("input-dock").classList.add("hidden");
+                document.getElementById("call-actions").classList.add("hidden");
+                document.getElementById("messages-flow").innerHTML = "";
+                document.getElementById("active-room-title").innerText = "Select an operation context node";
+                document.getElementById("active-room-status").innerHTML = "";
+                populateSidebarChannels();
+            });
         }
 
-        async function unpostPostedMessage(id) {
+        function unpostPostedMessage(id) {
+            document.getElementById("unpost-message-target-id").value = id;
+            openModal('unpost-message-modal');
+        }
+
+        async function executeMessageUnpost() {
+            const id = document.getElementById("unpost-message-target-id").value;
             await _client.from("messages").update({ is_deleted: true, content: null, media_url: null, media_url_raw: null, media_type: null, media_metadata: null }).eq("id", id);
+            closeModal('unpost-message-modal');
         }
 
-        async function modifyPostedMessage(id) {
-            const revised = prompt("Enter revised message body:");
+        function modifyPostedMessage(id, oldContent) {
+            document.getElementById("edit-message-target-id").value = id;
+            document.getElementById("edit-message-input").value = oldContent;
+            openModal('edit-message-modal');
+        }
+
+        async function executeMessagePayloadUpdate() {
+            const id = document.getElementById("edit-message-target-id").value;
+            const revised = document.getElementById("edit-message-input").value.trim();
             if(!revised) return;
             await _client.from("messages").update({ content: revised, is_edited: true }).eq("id", id);
+            closeModal('edit-message-modal');
         }
 
         async function markMessagesAsReadInChannel(channelId) {
@@ -626,7 +743,6 @@
             if(broadcastTypingSubscription) broadcastTypingSubscription.unsubscribe();
             if(signalingCallSubscription) signalingCallSubscription.unsubscribe();
 
-            // Realtime Message Stream
             globalMsgSubscription = _client.channel("realtime-msgs")
             .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, async (payload) => {
                 if(!selectedChannel) return;
@@ -641,16 +757,14 @@
                 }
             }).subscribe();
 
-            // Broadcaster Matrix (Typing & SPY)
             broadcastTypingSubscription = _client.channel("realtime-typing")
             .on("broadcast", { event: "metrics" }, (packet) => {
                 if(!selectedChannel || packet.payload.room !== selectedChannel.id) return;
                 const statusBox = document.getElementById("active-room-status");
                 
-                // SPY Engine Evaluation Layer
                 if(activeRTT_SpyHandle && activeRTT_SpyHandle.toLowerCase() === packet.payload.handler.toLowerCase()) {
                     if(packet.payload.isTyping) {
-                        statusBox.innerHTML = `<span class="text-red-400 animate-pulse">● Spy Node Engine:</span> <span class="text-white font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#ef4444]/20">${packet.payload.rawBuffer}</span>`;
+                        statusBox.innerHTML = `<span class="text-red-400 animate-pulse">● Spy Node:</span> <span class="text-white font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#ef4444]/20">${packet.payload.rawBuffer}</span>`;
                         const spyAudio = document.getElementById("rtt-spy-audio-node");
                         if(spyAudio.paused) spyAudio.play();
                     } else {
@@ -661,13 +775,12 @@
                 }
 
                 if(packet.payload.isTyping) {
-                    statusBox.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-[#00a884] font-semibold">${packet.payload.senderName} is writing</span><div class="flex pt-0.5"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
+                    statusBox.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-[#00a884] font-semibold">${packet.payload.senderName} is typing</span><div class="flex pt-0.5"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
                 } else {
                     statusBox.innerHTML = `<span>●</span> Cloud Sync Online`;
                 }
             }).subscribe();
 
-            // WebRTC Signaling Matrix
             signalingCallSubscription = _client.channel("realtime-signaling")
             .on("broadcast", { event: "call-signal" }, async (envelope) => {
                 const signal = envelope.payload;
@@ -713,7 +826,6 @@
             }).subscribe();
         }
 
-        // Feature Drivers
         function handleInputFieldChange(element) {
             if(!selectedChannel) return;
             const value = element.value;
@@ -721,7 +833,7 @@
             const textSegmentBeforeCursor = value.slice(0, cursorIndex);
             const triggeringMatch = textSegmentBeforeCursor.match(/\/\[see_([a-zA-Z0-9_]*)$/);
 
-            if (selectedChannel.is_group && triggeringMatch) {
+            if (triggeringMatch) {
                 const inputStringQuery = triggeringMatch[1].toLowerCase();
                 const suggestions = allProfilesList.filter(p => p.username.toLowerCase().includes(inputStringQuery));
                 renderUsernameSuggestionsDropdown(suggestions, triggeringMatch[0]);
@@ -770,7 +882,7 @@
                     if (value.toLowerCase() === "/[stop_see]") {
                         activeRTT_SpyHandle = null;
                         document.getElementById("rtt-spy-audio-node").pause();
-                        showCustomNotification("Spy Node", "Real-time key extraction pipeline deactivated.", "success");
+                        showCustomNotification("Spy Node", "Real-time pipeline deactivated.", "success");
                         document.activeElement.value = "";
                         return;
                     }
@@ -778,7 +890,7 @@
                     const spyEvaluator = value.match(/^\/\[see_([a-zA-Z0-9_]+)\]$/i);
                     if(spyEvaluator) {
                         activeRTT_SpyHandle = spyEvaluator[1];
-                        showCustomNotification("Spy Node", `Lock established on opertional handler @${activeRTT_SpyHandle}.`, "success");
+                        showCustomNotification("Spy Node", `Active tracker placed on @${activeRTT_SpyHandle}.`, "success");
                         document.activeElement.value = "";
                         return;
                     }
@@ -790,7 +902,6 @@
             });
         }
 
-        // Multimedia dispatcher
         function processMediaFile(inputNode, typeString) {
             const assetFile = inputNode.files[0];
             if(!assetFile) return;
@@ -822,20 +933,18 @@
             } else { audioRecorderInstance.stop(); triggerBtn.classList.remove("recording-pulse"); }
         }
 
-        // Third-party API Integration Engine
         let mediaSearchDebounceTimeout = null;
         function openMediaSearchModal(type) {
             activeMediaSearchType = type;
             document.getElementById("media-menu").classList.add("hidden");
             document.getElementById("media-search-modal").classList.remove("hidden");
-            document.getElementById("media-search-title").innerText = type === "gif" ? "Search Giphy operational database cluster" : "Search iTunes Audio Store cluster";
+            document.getElementById("media-search-title").innerText = type === "gif" ? "Search Giphy database assets" : "Search iTunes audio pipelines";
             document.getElementById("media-search-input").value = "";
             document.getElementById("media-search-results").innerHTML = "";
 
-            // Dynamic live search binding
             document.getElementById("media-search-input").oninput = (e) => {
                 clearTimeout(mediaSearchDebounceTimeout);
-                mediaSearchDebounceTimeout = setTimeout(() => performMediaSearch(), 500);
+                mediaSearchDebounceTimeout = setTimeout(() => performMediaSearch(), 400);
             };
         }
 
@@ -843,53 +952,33 @@
             const query = document.getElementById("media-search-input").value.trim();
             const resultsBox = document.getElementById("media-search-results");
             if(!query) { resultsBox.innerHTML = ""; return; }
-            resultsBox.innerHTML = `<div class="col-span-3 text-center py-8 text-xs text-[#8696a0] animate-pulse">Querying core registers...</div>`;
 
             if(activeMediaSearchType === "gif") {
-                const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_OPERATIONAL_KEY}&q=${encodeURIComponent(query)}&limit=9&rating=g`);
+                const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_OPERATIONAL_KEY}&q=${encodeURIComponent(query)}&limit=12&rating=g`);
                 const data = await res.json();
                 resultsBox.innerHTML = "";
                 data?.data?.forEach(gif => {
                     const url = gif.images?.fixed_height?.url;
                     if(!url) return;
                     const containerNode = document.createElement("div");
-                    containerNode.className = "relative rounded-xl overflow-hidden cursor-pointer aspect-video ring-1 ring-[#222e35] hover:ring-[#00a884]";
+                    containerNode.className = "relative rounded-xl overflow-hidden cursor-pointer aspect-square bg-[#111b21] hover:ring-2 hover:ring-[#00a884] transition-all";
                     containerNode.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
                     containerNode.onclick = () => { triggerMediaAction(url, "gif"); closeModal("media-search-modal"); };
                     resultsBox.appendChild(containerNode);
-                });
-            } else {
-                const { data } = await _client.functions.invoke("media-enrichment", { body: { type: activeMediaSearchType, query: query } });
-                resultsBox.innerHTML = "";
-                data?.results?.forEach(song => {
-                    const boxNode = document.createElement("div");
-                    boxNode.className = "bg-[#202c33] p-2.5 rounded-xl border border-[#222e35]/50 hover:border-[#00a884] text-left flex flex-col justify-between h-28 cursor-pointer";
-                    boxNode.innerHTML = `
-                        <div class="flex gap-2 min-w-0">
-                            <img src="${song.artworkUrl60}" class="w-8 h-8 rounded-md object-cover">
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[11px] font-bold text-white truncate">${song.trackName}</p>
-                                <p class="text-[9px] text-[#8696a0] truncate">${song.artistName}</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-1.5 mt-2">
-                            <button class="flex-1 text-[9px] bg-[#111b21] text-[#e9edef] font-medium py-1 rounded" onclick="event.stopPropagation(); triggerInlineAudioPlayback('${song.previewUrl}')">Listen</button>
-                            <button class="flex-1 text-[9px] bg-[#00a884] text-black font-bold py-1 rounded">Send</button>
-                        </div>`;
-                    boxNode.onclick = () => { commitPayloadToDatabase("", "music", song.artworkUrl100, song.previewUrl, { artist: song.artistName, title: song.trackName }); closeModal("media-search-modal"); };
-                    resultsBox.appendChild(boxNode);
                 });
             }
         }
 
         // WebRTC Signaling Engine
         async function createNewCall(type) {
-            if(!targetedCallPeerId) return showCustomNotification("Signal Fault", "Peer node address missing.", "error");
+            if(!targetedCallPeerId) return showCustomNotification("Signal Fault", "Group contexts do not support point-to-point hardware sync.", "error");
             if(peerConnectionContext) return showCustomNotification("Resource Conflict", "Processing active line.", "error");
             
             isCallInitiator = true;
             currentCallSessionId = `call_${Date.now()}_${localUser.id}`;
-            setupCallInterfaceHUD(type, localProfile);
+            
+            const peerProfile = allProfilesList.find(p => p.id === targetedCallPeerId);
+            setupCallInterfaceHUD(type, peerProfile);
 
             try {
                 localHardwareStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: type === "video" });
@@ -900,7 +989,7 @@
                 await _client.functions.invoke("media-enrichment", { body: { type: "rtc-handshake", action: "initiate", sessionId: currentCallSessionId, offer: peerConnectionContext.localDescription, callType: type } });
 
                 sendWebRTCSignalingPacket(targetedCallPeerId, "INVITE_REQUEST", currentCallSessionId, { callType: type, callerProfile: localProfile });
-                document.getElementById("call-status-string").innerText = "Awaiting handshake sync parameters...";
+                document.getElementById("call-status-string").innerText = "Awaiting response...";
             } catch(err) { cleanAndKillHardwareCallTracks(); }
         }
 
@@ -918,7 +1007,7 @@
                 const remoteVideoElement = document.getElementById("remote-video-track");
                 if(remoteVideoElement && event.streams[0]) {
                     remoteVideoElement.srcObject = event.streams[0];
-                    document.getElementById("call-status-string").innerText = "Signal Handshake establish. Stream matrix active.";
+                    document.getElementById("call-status-string").innerText = "Connection Established";
                 }
             };
         }
@@ -938,7 +1027,7 @@
             const modal = document.getElementById("incoming-call-modal");
             document.getElementById("incoming-caller-name").innerText = signal.payload.callerProfile.name;
             document.getElementById("incoming-caller-avatar").src = signal.payload.callerProfile.profile_picture;
-            document.getElementById("incoming-call-type").innerText = `Incoming ${signal.payload.callType} call request matrix`;
+            document.getElementById("incoming-call-type").innerText = `Incoming ${signal.payload.callType} Call Request`;
             modal.setAttribute("data-call-type", signal.payload.callType);
             modal.classList.remove("hidden");
         }
@@ -1012,7 +1101,6 @@
             currentCallSessionId = null;
         }
 
-        // Helpers & UI
         function showCustomNotification(title, content) {
             const parent = document.getElementById("notification-container");
             const card = document.createElement("div");
