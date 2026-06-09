@@ -4,412 +4,608 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WattzApp Pro Extreme - Ultimate Ed.</title>
-    <script src="https://tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-/* ========================================================================= */
-/* 1. TAILWIND DESIGN SYSTEM BASE LAYERS                                     */
-/* ========================================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        /* ========================================================================= */
+        /* 1. ARCHITECTURE FOUNDATION & DESIGN TOKENS                                */
+        /* ========================================================================= */
+        :root {
+            --bg-main: #0b141a;
+            --bg-panel: #111b21;
+            --bg-header: #202c33;
+            --bg-input: #2a3942;
+            --bg-bubble-out: #005c4b;
+            --bg-bubble-in: #202c33;
+            --accent-green: #00a884;
+            --accent-green-hover: #008f72;
+            --text-primary: #e9edef;
+            --text-secondary: #8696a0;
+            --text-muted: #aebac1;
+            --border-primary: rgba(34, 46, 53, 0.6);
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+        }
 
-:root {
-  font-family: 'Inter', sans-serif;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: #374248 transparent;
+        }
 
-/* ========================================================================= */
-/* 2. ENGINE SCROLLBAR OPTIMIZATION                                          */
-/* ========================================================================= */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+        }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+        /* Webkit Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #374248; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f5d64; }
 
-::-webkit-scrollbar-thumb {
-  background: #374248;
-  border-radius: 99px;
-}
+        /* Utility Helpers */
+        .hidden { display: none !important; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #4f5d64;
-}
+        /* ========================================================================= */
+        /* 2. CORE GATEWAY CONTAINER GRAPHICS (AUTH)                                 */
+        /* ========================================================================= */
+        .gateway-viewport {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
 
-/* For Firefox compatibility */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #374248 transparent;
-}
+        .gateway-card {
+            width: 100%;
+            max-w: 420px;
+            background-color: #222e35;
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
 
-/* ========================================================================= */
-/* 3. CHAT WORKSPACE & TYPING SYSTEM UTILITIES                              */
-/* ========================================================================= */
-.chat-input::placeholder {
-  color: #8696a0;
-}
+        .gateway-brand-icon {
+            display: inline-flex;
+            padding: 16px;
+            background-color: rgba(0, 168, 132, 0.1);
+            border-radius: 9999px;
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 168, 132, 0.2);
+            box-shadow: 0 0 20px rgba(0, 168, 132, 0.15);
+            margin-bottom: 16px;
+        }
 
-/* Inline Dynamic Bubble Animations */
-.typing-dot {
-  animation: typing-bounce 1.4s infinite;
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background-color: #8696a0;
-  margin: 0 1px;
-}
+        .gateway-header { text-center: center; margin-bottom: 24px; text-align: center; }
+        .gateway-header h1 { font-size: 24px; font-weight: 700; color: #fff; }
+        .gateway-header p { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
-.typing-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
+        .gateway-form-group { display: flex; flex-direction: column; gap: 12px; }
+        
+        .form-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            color: #fff;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus { border-color: var(--accent-green); outline: none; }
+        .form-input::placeholder { color: var(--text-secondary); }
 
-.typing-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+        .form-btn {
+            width: 100%;
+            background-color: var(--accent-green);
+            color: #0b141a;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 168, 132, 0.2);
+        }
+        .form-btn:hover { background-color: var(--accent-green-hover); }
+        .form-btn:active { transform: scale(0.99); }
 
-@keyframes typing-bounce {
-  0%, 100% {
-    opacity: 0.1;
-    transform: translateY(0px);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
-}
+        .gateway-toggle-footer { text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 16px; }
+        .gateway-toggle-footer button { background: none; border: none; color: var(--accent-green); cursor: pointer; font-weight: 500; margin-left: 4px; }
+        .gateway-toggle-footer button:hover { text-decoration: underline; }
 
-/* ========================================================================= */
-/* 4. PERIPHERAL PIPELINE AND RECORDING STATES                               */
-/* ========================================================================= */
-.recording-pulse {
-  animation: pulse-record-glow 1s infinite ease-in-out;
-  color: #ef4444 !important;
-}
+        /* ========================================================================= */
+        /* 3. DUAL-PANEL APPLICATION WORKSPACE LAYOUT                                */
+        /* ========================================================================= */
+        .workspace-viewport {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            overflow: hidden;
+        }
 
-@keyframes pulse-record-glow {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0));
-  }
-  50% {
-    transform: scale(1.12);
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
-  }
-}
+        /* Sidebar Architecture */
+        .sidebar-wrapper {
+            width: 360px;
+            background-color: var(--bg-panel);
+            border-r: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
+            z-index: 20;
+        }
 
-/* ========================================================================= */
-/* 5. INTERFACE TRANSITION OVERLAYS & HUD LAYERS                             */
-/* ========================================================================= */
-.modal-backdrop-blur {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
+        .panel-header {
+            height: 64px;
+            background-color: var(--bg-header);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(34, 46, 53, 0.4);
+        }
 
-/* Menu expansion animations */
-#media-menu:not(.hidden) {
-  animation: menu-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+        .user-badge-block { display: flex; align-items: center; gap: 12px; min-w: 0; }
+        .user-avatar-mask { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-primary); cursor: pointer; transition: border-color 0.2s; }
+        .user-avatar-mask:hover { border-color: var(--accent-green); }
+        
+        .user-meta-strings { min-w: 0; }
+        .user-meta-strings h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+        .user-meta-strings p { font-size: 11px; color: var(--text-secondary); }
 
-@keyframes menu-pop-in {
-  0% {
-    transform: scale(0.95) translateY(10px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
+        .actions-row { display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
+        .icon-action-btn { background: none; border: none; padding: 10px; color: inherit; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .icon-action-btn:hover { background-color: var(--bg-input); color: #fff; }
+        .icon-action-btn.danger-action:hover { color: var(--danger); }
 
-/* ========================================================================= */
-/* 6. WEBRTC MEDIA BUFFER GRAPHICS & VIDEO GRID                              */
-/* ========================================================================= */
-video {
-  background-color: #0b141a;
-  object-fit: cover;
-}
+        .search-container-box { padding: 12px; background-color: var(--bg-panel); border-bottom: 1px solid rgba(34, 46, 53, 0.3); }
+        .search-input-wrapper { position: relative; display: flex; align-items: center; }
+        .search-icon-positional { position: absolute; left: 14px; color: var(--text-secondary); display: flex; }
+        .search-input-field { width: 100%; background-color: var(--bg-header); border: none; border-radius: 10px; padding: 10px 16px 10px 40px; font-size: 13px; color: var(--text-primary); }
+        .search-input-field:focus { outline: none; }
 
-.video-mirror-pipeline {
-  transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
-}
+        /* Channel Operational Matrices */
+        .nodes-stream-list { flex-1: 1 1 0%; overflow-y: auto; display: flex; flex-direction: column; }
+        .channel-list-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; border-bottom: 1px solid rgba(34, 46, 53, 0.2); transition: background-color 0.2s; }
+        .channel-list-item:hover { background-color: rgba(32, 44, 51, 0.5); }
+        .channel-list-item.active-node { background-color: var(--bg-input); }
+        
+        .node-avatar-mask { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-primary); flex-shrink: 0; }
+        .node-info-block { flex: 1; min-w: 0; }
+        .node-header-row { display: flex; justify-content: space-between; align-items: baseline; }
+        .node-header-row h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .node-header-row span { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
+        .node-sub-handle { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-/* Audio Waveform visualization nodes */
-#audio-visualizer div {
-  transition: height 0.15s ease-in-out;
-}
+        /* Chat Monitor Canvas */
+        .chat-monitor-canvas { flex: 1; background-color: var(--bg-main); display: flex; flex-direction: column; height: 100%; relative: position; z-index: 10; }
+        
+        .chat-flow-pane { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 24px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+            background-blend-mode: overlay;
+            background-color: rgba(11, 20, 26, 0.98);
+        }
 
-/* ========================================================================= */
-/* 7. APP NOTIFICATION ENGINE TRANSFORMS                                     */
-/* ========================================================================= */
-#notification-container > div {
-  animation: toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+        /* ========================================================================= */
+        /* 4. CHAT BUBBLE & COMPONENT TYPOGRAPHY                                     */
+        /* ========================================================================= */
+        .message-row-frame { display: flex; w-full: 100%; items: flex-end; gap: 10px; }
+        .message-row-frame.outgoing-frame { justify-content: flex-end; }
+        .message-row-frame.incoming-frame { justify-content: flex-start; }
 
-@keyframes toast-slide-in {
-  0% {
-    transform: translateX(110%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
+        .bubble-wrapper { padding: 8px 14px; border-radius: 16px; font-size: 13px; position: relative; max-w: 70%; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .message-row-frame.outgoing-frame .bubble-wrapper { background-color: var(--bg-bubble-out); color: var(--text-primary); border-top-right-radius: 0; }
+        .message-row-frame.incoming-frame .bubble-wrapper { background-color: var(--bg-bubble-in); color: var(--text-primary); border-top-left-radius: 0; }
+
+        .bubble-group-label { display: block; font-size: 10px; font-weight: 700; color: var(--accent-green); margin-bottom: 2px; }
+        .bubble-meta-row { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 9px; color: var(--text-secondary); margin-top: 4px; user-select: none; }
+        
+        .bubble-micro-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; flex-shrink: 0; }
+        .message-row-frame.outgoing-frame .bubble-micro-avatar { border: 2px solid rgba(0, 92, 75, 0.5); }
+        .message-row-frame.incoming-frame .bubble-micro-avatar { border: 2px solid rgba(42, 57, 66, 0.7); }
+
+        .bubble-unsent-string { color: var(--text-secondary); font-style: italic; font-size: 11px; }
+
+        /* Media Attachments */
+        .attachment-image-container { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); max-w: 280px; margin: 6px 0; background-color: #000; cursor: zoom-in; }
+        .attachment-image-container img { width: 100%; max-height: 200px; object-fit: cover; transition: transform 0.2s; }
+        .attachment-image-container:hover img { transform: scale(1.03); }
+
+        .attachment-video-node { border-radius: 12px; max-w: 280px; max-height: 200px; border: 1px solid rgba(255,255,255,0.1); margin: 6px 0; }
+        
+        .attachment-audio-card { background-color: #182229; border: 1px solid var(--bg-input); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+        .attachment-audio-card audio { width: 180px; height: 28px; }
+
+        .attachment-music-card { background-color: #1e2a30; border: 1px solid rgba(0, 168, 132, 0.3); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin: 6px 0; max-w: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .music-card-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+        .music-card-info { flex: 1; min-w: 0; }
+        .music-card-info p.music-title { font-size: 12px; font-weight: 700; color: #fff; }
+        .music-card-info p.music-artist { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+        .music-listen-btn { font-size: 10px; color: var(--accent-green); font-weight: 600; margin-top: 6px; background-color: var(--bg-header); padding: 2px 8px; border-radius: 4px; border: none; cursor: pointer; }
+        .music-listen-btn:hover { background-color: var(--accent-green); color: #000; }
+
+        /* Bubble Context Action Anchors */
+        .bubble-hover-actions { position: absolute; -top: 14px; right: 8px; display: none; background-color: #233138; border: 1px solid rgba(34, 46, 53, 0.8); border-radius: 8px; padding: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 20; }
+        .bubble-wrapper:hover .bubble-hover-actions { display: flex; align-items: center; }
+        .bubble-action-trigger { background: none; border: none; padding: 6px; color: var(--text-secondary); border-radius: 6px; cursor: pointer; display: flex; }
+        .bubble-action-trigger:hover { background-color: rgba(17, 27, 33, 0.7); color: #fff; }
+        .bubble-action-trigger.danger-trigger:hover { color: var(--danger); }
+
+        /* ========================================================================= */
+        /* 5. INPUT CONSOLE DOCK ARCHITECTURE                                        */
+        /* ========================================================================= */
+        .input-dock-footer { min-height: 64px; background-color: var(--bg-header); padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(34, 46, 53, 0.4); position: relative; }
+        .input-dock-menu-trigger { relative: position; }
+        
+        .media-popover-menu { position: absolute; bottom: 100%; margin-bottom: 12px; left: 16px; background-color: #233138; border-radius: 12px; box-shadow: 0 20px 4px -5px rgba(0,0,0,0.4); padding: 6px; width: 192px; border: 1px solid var(--border-primary); display: flex; flex-direction: column; gap: 2px; z-index: 60; transform-origin: bottom left; transition: transform 0.2s; }
+        .media-menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; hover: background-color: rgba(17, 27, 33, 0.7); cursor: pointer; color: var(--text-primary); font-size: 12px; font-weight: 500; border-radius: 8px; border: none; background: none; text-align: left; width: 100%; }
+        
+        .chat-input-wrapper-node { flex: 1; position: relative; }
+        .chat-box-input-element { width: 100%; background-color: var(--bg-input); border: 1px solid transparent; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #fff; transition: border-color 0.2s; }
+        .chat-box-input-element:focus { outline: none; border-color: rgba(34, 46, 53, 0.8); }
+
+        /* Mention Typeahead Systems */
+        .typeahead-mention-box { position: absolute; bottom: 100%; margin-bottom: 8px; left: 0; width: 100%; background-color: #233138; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-primary); max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; z-index: 90; }
+        .typeahead-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 12px; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(34, 46, 53, 0.3); }
+        .typeahead-row:hover { background-color: var(--accent-green); color: #0b141a; }
+        .typeahead-row img { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; }
+
+        /* ========================================================================= */
+        /* 6. MODAL OVERLAYS & HUD WORKSPACE INTERFACES                              */
+        /* ========================================================================= */
+        .modal-backdrop { position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+        .modal-body-card { background-color: #222e35; border-radius: 16px; padding: 24px; width: 100%; max-w: 400px; border: 1px solid var(--border-primary); display: flex; flex-direction: column; gap: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .modal-body-card.wide-card { max-w: 560px; }
+        
+        .modal-title { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+        .modal-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        
+        .modal-actions-footer { display: flex; justify-content: flex-end; gap: 10px; font-size: 12px; margin-top: 8px; }
+        .modal-btn-cancel { padding: 10px 16px; color: var(--text-secondary); background: none; border: none; cursor: pointer; border-radius: 10px; }
+        .modal-btn-cancel:hover { background-color: rgba(17, 27, 33, 0.5); }
+        .modal-btn-confirm { padding: 10px 16px; background-color: var(--accent-green); color: #0b141a; font-weight: 600; border-radius: 10px; border: none; cursor: pointer; }
+        .modal-btn-confirm:hover { background-color: var(--accent-green-hover); }
+        .modal-btn-danger { padding: 10px 16px; background-color: var(--danger); color: #fff; font-weight: 600; border-radius: 10px; border: none; cursor: pointer; }
+        .modal-btn-danger:hover { background-color: var(--danger-hover); }
+
+        /* Account Custom Matrix Settings Panel */
+        .profile-matrix-avatar-row { display: flex; flex-direction: column; align-items: center; gap: 12px; border-bottom: 1px solid rgba(34, 46, 53, 0.4); padding-bottom: 16px; }
+        .profile-matrix-preview { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid var(--border-primary); }
+        .profile-upload-anchor { background-color: var(--bg-header); color: var(--text-primary); font-size: 12px; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: background-color 0.2s; }
+        .profile-upload-anchor:hover { background-color: var(--bg-input); }
+        
+        .profile-matrix-section { border-top: 1px solid rgba(34, 46, 53, 0.4); pt: 16px; display: flex; flex-direction: column; gap: 12px; padding-top: 16px; }
+        .profile-matrix-section h4 { font-size: 13px; font-weight: 600; color: #fff; }
+
+        /* Media / Giphy Discovery Engine Layouts */
+        .media-search-grid-output { display: grid; grid-template-columns: repeat(3, minmax(0, 1xl)); gap: 12px; max-height: 320px; overflow-y: auto; padding: 4px; }
+        .media-grid-item-cell { position: relative; border-radius: 12px; overflow: hidden; cursor: pointer; aspect-ratio: 1 / 1; background-color: var(--bg-panel); transition: all 0.2s; }
+        .media-grid-item-cell img { width: 100%; height: 100%; object-fit: cover; }
+        .media-grid-item-cell:hover { transform: scale(0.98); box-shadow: 0 0 0 2px var(--accent-green); }
+
+        /* ========================================================================= */
+        /* 7. INTEGRATED WEBRTC REAL-TIME MEDIA COMPONENT HOOKS                       */
+        /* ========================================================================= */
+        .call-hud-matrix { position: fixed; inset: 0; background-color: rgba(11, 20, 26, 0.96); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
+        .call-hud-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 24px; }
+        .call-hud-avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent-green); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
+        .call-hud-peer-name { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.01em; }
+        .call-hud-status-str { font-size: 12px; color: var(--accent-green); font-weight: 600; tracking-spacing: 0.1em; text-transform: uppercase; }
+
+        .call-hardware-grid { width: 100%; max-w: 896px; flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; background-color: var(--bg-panel); border-radius: 24px; padding: 16px; border: 1px solid var(--border-primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); position: relative; }
+        .call-video-viewport { bg-color: #000; background-color: #000; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid rgba(34, 46, 53, 0.4); }
+        .call-video-viewport video { width: 100%; height: 100%; object-fit: cover; }
+        .call-video-viewport.local-pipeline video { transform: scaleX(-1); }
+        .call-viewport-label { position: absolute; bottom: 10px; left: 10px; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px); padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 500; color: var(--text-primary); }
+
+        .call-audio-visualizer-pane { width: 100%; max-w: 896px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 40px; background-color: var(--bg-panel); border-radius: 24px; border: 1px solid var(--border-primary); }
+        
+        .call-control-console-bar { display: flex; align-items: center; gap: 16px; padding: 16px; background-color: var(--bg-header); border-radius: 9999px; border: 1px solid var(--border-primary); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); z-index: 20; margin-top: 24px; }
+        .console-round-btn { width: 48px; height: 48px; border-radius: 50%; background-color: var(--bg-panel); color: #fff; border: 1px solid var(--border-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .console-round-btn:hover { background-color: var(--bg-input); }
+        .console-round-btn.btn-active-hangup { width: 64px; height: 64px; background-color: var(--danger); border: none; transform: scale(1.05); }
+        .console-round-btn.btn-active-hangup:hover { background-color: var(--danger-hover); }
+        .console-round-btn.hardware-muted { background-color: var(--danger); border-color: transparent; }
+
+        /* ========================================================================= */
+        /* 8. SYSTEM NOTIFICATION ARCHITECTURE & ANIMATION ENGINE                    */
+        /* ========================================================================= */
+        .toast-notifications-container { position: fixed; top: 16px; right: 16px; z-index: 150; display: flex; flex-direction: column; gap: 12px; width: 320px; }
+        .toast-notification-card { padding: 16px; background-color: #222e35; border-radius: 12px; border-left: 4px solid var(--accent-green); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); display: flex; flex-direction: column; gap: 4px; animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-title { font-size: 12px; font-weight: 700; color: var(--accent-green); }
+        .toast-body { font-size: 12px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Animation Vectors */
+        @keyframes toast-slide-in {
+            0% { transform: translateX(110%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .recording-pulse { animation: pulse-record 1s infinite ease-in-out; color: var(--danger) !important; }
+        @keyframes pulse-record {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(239,68,68,0)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(239,68,68,0.5)); }
+        }
+
+        .typing-dot { animation: typing-bounce 1.4s infinite; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background-color: var(--text-secondary); margin: 0 1px; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 100% { opacity: 0.2; }
+            20% { opacity: 1; }
+        }
+
+        /* Ambient Audio Equalizer Motion Bulks */
+        .visualizer-bar-node { width: 10px; background-color: var(--accent-green); border-radius: 9999px; }
+        .v-1 { height: 80px; animation: eq-pulse 0.6s infinite ease-in-out alternate; }
+        .v-2 { height: 120px; animation: eq-pulse 0.4s infinite ease-in-out alternate 0.1s; }
+        .v-3 { height: 160px; animation: eq-pulse 0.7s infinite ease-in-out alternate 0.2s; }
+        .v-4 { height: 120px; animation: eq-pulse 0.5s infinite ease-in-out alternate 0.15s; }
+        .v-5 { height: 80px; animation: eq-pulse 0.6s infinite ease-in-out alternate 0.05s; }
+        @keyframes eq-pulse { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1.1); } }
     </style>
 </head>
-<body class="bg-[#0b141a] text-[#e9edef] h-screen w-screen overflow-hidden font-sans antialiased selection:bg-[#00a884]/30">
+<body>
 
-    <div id="auth-view" class="w-full h-full flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-[#222e35] p-8 rounded-2xl border border-[#222e35] shadow-2xl space-y-6">
-            <div class="text-center">
-                <div class="inline-flex p-4 bg-[#00a884]/10 rounded-full text-[#00a884] border border-[#00a884]/20 shadow-[0_0_20px_rgba(0,168,132,0.2)] mb-3">
+    <div id="auth-view" class="gateway-viewport">
+        <div class="gateway-card">
+            <div class="gateway-header">
+                <div class="gateway-brand-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-white mt-3">WattzApp Pro Extreme</h1>
-                <p id="auth-subtitle" class="text-xs text-[#8696a0] mt-1">Sign in with your database cluster identity node credentials</p>
+                <h1>WattzApp Pro Extreme</h1>
+                <p id="auth-subtitle">Sign in with your database cluster identity node credentials</p>
             </div>
             
-            <div class="space-y-3">
-                <input type="text" id="auth-name" placeholder="Full Profile Name" class="hidden w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
-                <input type="text" id="auth-username" placeholder="Unique Username Handle" class="hidden w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
-                <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
-                <input type="password" id="auth-password" placeholder="Secure Password" class="w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
-                <button onclick="submitAuthForm()" id="auth-btn" class="w-full bg-[#00a884] text-black font-semibold rounded-xl py-3.5 text-sm hover:bg-[#008f72] shadow-lg transition-all active:scale-[0.99] mt-2">Sign In</button>
+            <div class="gateway-form-group">
+                <input type="text" id="auth-name" placeholder="Full Profile Name" class="form-input hidden">
+                <input type="text" id="auth-username" placeholder="Unique Username Handle" class="form-input hidden">
+                <input type="email" id="auth-email" placeholder="Email Address" class="form-input">
+                <input type="password" id="auth-password" placeholder="Secure Password" class="form-input">
+                <button onclick="submitAuthForm()" id="auth-btn" class="form-btn">Sign In</button>
             </div>
             
-            <div class="text-center text-xs text-[#8696a0] pt-1">
+            <div class="gateway-toggle-footer">
                 <span id="auth-toggle-msg">New operational user node?</span>
-                <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-[#00a884] hover:underline font-medium ml-1 bg-transparent">Create account</button>
+                <button onclick="toggleAuthMode()" id="auth-toggle-link">Create account</button>
             </div>
         </div>
     </div>
 
-    <div id="app-view" class="hidden w-full h-full flex overflow-hidden">
+    <div id="app-view" class="workspace-viewport hidden">
         
-        <aside class="w-[360px] bg-[#111b21] border-r border-[#222e35]/60 flex flex-col h-full flex-shrink-0 z-20">
-            <header class="h-[64px] bg-[#202c33] px-4 flex items-center justify-between border-b border-[#222e35]/30 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-[#222e35]/80 hover:border-[#00a884] transition-all" onclick="openModal('profile-modal')">
-                    <div class="min-w-0">
-                        <p id="user-name-display" class="text-sm font-semibold text-[#e9edef] truncate"></p>
-                        <p id="user-username-display" class="text-[11px] text-[#8696a0] truncate"></p>
+        <aside class="sidebar-wrapper">
+            <header class="panel-header">
+                <div class="user-badge-block">
+                    <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="user-avatar-mask" onclick="openModal('profile-modal')">
+                    <div class="user-meta-strings">
+                        <h3 id="user-name-display" class="truncate"></h3>
+                        <p id="user-username-display" class="truncate"></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-[#aebac1]">
-                    <button onclick="openModal('create-channel-modal')" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all" title="Create Group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-                    <button onclick="openModal('create-private-modal')" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all" title="New DM"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></button>
-                    <button onclick="terminateSession()" class="p-2 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+                <div class="actions-row">
+                    <button onclick="openModal('create-channel-modal')" class="icon-action-btn" title="Create Group"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                    <button onclick="openModal('create-private-modal')" class="icon-action-btn" title="New DM"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></button>
+                    <button onclick="terminateSession()" class="icon-action-btn danger-action" title="Logout"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
                 </div>
             </header>
             
-            <div class="p-3 bg-[#111b21] border-b border-[#222e35]/30">
-                <div class="relative flex items-center">
-                    <span class="absolute left-3.5 text-[#8696a0]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-                    <input type="text" id="sidebar-search" placeholder="Search chats..." class="w-full bg-[#202c33] text-xs rounded-xl pl-10 pr-4 py-2.5 text-[#e9edef] placeholder-[#8696a0] focus:outline-none focus:ring-1 focus:ring-[#222e35]" oninput="filterSidebarChats(this.value)">
+            <div class="search-container-box">
+                <div class="search-input-wrapper">
+                    <span class="search-icon-positional"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                    <input type="text" id="sidebar-search" placeholder="Search chats..." class="search-input-field" oninput="filterSidebarChats(this.value)">
                 </div>
             </div>
             
-            <div id="channels-list" class="flex-1 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30"></div>
+            <div id="channels-list" class="nodes-stream-list"></div>
         </aside>
 
-        <main class="flex-1 bg-[#0b141a] flex flex-col h-full relative z-10">
-            <header class="h-[64px] bg-[#202c33] px-4 flex items-center justify-between border-b border-[#222e35]/20 shadow-sm">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover border border-[#222e35]/60 flex-shrink-0">
-                    <div class="min-w-0">
-                        <h2 id="active-room-title" class="text-sm font-semibold text-white tracking-wide truncate">Select an operation context node</h2>
-                        <div id="active-room-status" class="text-[11px] font-medium tracking-wide mt-0.5 min-h-[15px] flex items-center gap-1.5 text-[#8696a0]"></div>
+        <main class="chat-monitor-canvas">
+            <header class="panel-header">
+                <div class="user-badge-block">
+                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="user-avatar-mask" style="cursor: default;">
+                    <div class="user-meta-strings">
+                        <h3 id="active-room-title" class="truncate">Select an operation context node</h3>
+                        <p id="active-room-status" class="truncate"></p>
                     </div>
                 </div>
                 
-                <div id="call-actions" class="hidden flex items-center gap-2 text-[#aebac1]">
-                    <button onclick="createNewCall('audio')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
-                    <button onclick="createNewCall('video')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
-                    <button onclick="openModal('delete-chat-confirm-modal')" class="p-2.5 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all" title="Delete Entire Thread"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                <div id="call-actions" class="actions-row hidden">
+                    <button onclick="createNewCall('audio')" class="icon-action-btn" title="Audio Call"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+                    <button onclick="createNewCall('video')" class="icon-action-btn" title="Video Call"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
+                    <button onclick="openModal('delete-chat-confirm-modal')" class="icon-action-btn danger-action" title="Delete Operations Context"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
             </header>
 
-            <div id="messages-flow" class="flex-1 overflow-y-auto custom-scroll p-6 space-y-3.5 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-[0.015]"></div>
+            <div id="messages-flow" class="chat-flow-pane"></div>
 
-            <footer id="input-dock" class="hidden min-h-[64px] bg-[#202c33] px-4 py-2.5 flex items-center gap-3 border-t border-[#222e35]/40 relative">
-                <div class="relative flex-none">
-                    <button onclick="toggleElement('media-menu')" class="p-2.5 text-[#aebac1] hover:bg-[#2a3942] hover:text-white rounded-xl transition-all flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <div id="media-menu" class="hidden absolute bottom-full mb-3 left-0 bg-[#233138] rounded-xl shadow-2xl py-2 w-48 border border-[#222e35] text-xs font-medium space-y-0.5 transform scale-95 opacity-0 transition-all origin-bottom-left">
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 cursor-pointer text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Pipeline<input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')"></label>
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 cursor-pointer text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg> Video File<input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')"></label>
-                        <button onclick="openMediaSearchModal('gif')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Giphy Asset</button>
+            <footer id="input-dock" class="input-dock-footer hidden">
+                <div class="input-dock-menu-trigger">
+                    <button onclick="toggleElement('media-menu')" class="icon-action-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <div id="media-menu" class="media-popover-menu hidden">
+                        <label class="media-menu-item"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Pipeline<input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')"></label>
+                        <label class="media-menu-item"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg> Video File<input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')"></label>
+                        <button onclick="openMediaSearchModal('gif')" class="media-menu-item"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Giphy Asset</button>
                     </div>
                 </div>
 
-                <div class="flex-1 relative">
-                    <input type="text" id="msg-field" placeholder="Type data message stream..." class="chat-input w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#222e35]/80 transition-all" oninput="handleInputFieldChange(this)">
-                    <div id="username-suggestions" class="hidden absolute bottom-full mb-2 left-0 w-full bg-[#233138] rounded-xl shadow-2xl border border-[#222e35] max-h-40 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30 z-50"></div>
+                <div class="chat-input-wrapper-node">
+                    <input type="text" id="msg-field" placeholder="Type data message stream..." class="chat-box-input-element" oninput="handleInputFieldChange(this)">
+                    <div id="username-suggestions" class="typeahead-mention-box hidden"></div>
                 </div>
-                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="flex-none p-2.5 text-[#aebac1] hover:bg-[#2a3942] hover:text-white rounded-xl transition-all flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button>
+                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="icon-action-btn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button>
             </footer>
         </main>
     </div>
 
-    <div id="notification-container" class="fixed top-4 right-4 z-[100] space-y-3 w-80"></div>
+    <div id="notification-container" class="toast-notifications-container"></div>
 
-    <div id="create-channel-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-white tracking-wide">Establish New Group Node</h3>
-            <input type="text" id="new-channel-title" placeholder="Group Channel Name" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#00a884]">
-            <div class="flex justify-end gap-2 text-xs pt-2">
-                <button onclick="closeModal('create-channel-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
-                <button onclick="executeChannelCreation()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Create Group</button>
+    <div id="create-channel-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card">
+            <h3 class="modal-title">Establish New Group Node</h3>
+            <input type="text" id="new-channel-title" placeholder="Group Channel Name" class="form-input">
+            <div class="modal-actions-footer">
+                <button onclick="closeModal('create-channel-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="executeChannelCreation()" class="modal-btn-confirm">Create Group</button>
             </div>
         </div>
     </div>
 
-    <div id="create-private-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-white tracking-wide">Open Secure Direct Link</h3>
-            <input type="text" id="new-private-handle" placeholder="Target Handle (@username)" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#00a884]">
-            <div class="flex justify-end gap-2 text-xs pt-2">
-                <button onclick="closeModal('create-private-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
-                <button onclick="executePrivateChatCreation()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Connect Node</button>
+    <div id="create-private-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card">
+            <h3 class="modal-title">Open Secure Direct Link</h3>
+            <input type="text" id="new-private-handle" placeholder="Target Handle (@username)" class="form-input">
+            <div class="modal-actions-footer">
+                <button onclick="closeModal('create-private-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="executePrivateChatCreation()" class="modal-btn-confirm">Connect Node</button>
             </div>
         </div>
     </div>
 
-    <div id="delete-chat-confirm-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-red-500/20 space-y-4 shadow-2xl text-center">
-            <div class="w-12 h-12 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center mx-auto mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            </div>
-            <h3 class="text-sm font-bold text-white">Purge Communication Thread?</h3>
-            <p class="text-xs text-[#8696a0]">This action wipes the channel context node entirely from the global database clusters.</p>
-            <div class="flex justify-center gap-3 text-xs pt-2">
-                <button onclick="closeModal('delete-chat-confirm-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl font-medium">Cancel</button>
-                <button onclick="executeCurrentChatDeletion()" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all">Purge Node</button>
+    <div id="delete-chat-confirm-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card" style="text-align: center;">
+            <h3 class="modal-title">Purge Communication Thread?</h3>
+            <p class="modal-desc">This action wipes the channel context node entirely from the global database clusters.</p>
+            <div class="modal-actions-footer" style="justify-content: center;">
+                <button onclick="closeModal('delete-chat-confirm-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="executeCurrentChatDeletion()" class="modal-btn-danger">Purge Node</button>
             </div>
         </div>
     </div>
 
-    <div id="edit-message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#222e35] space-y-4 shadow-2xl">
-            <h3 class="text-sm font-bold text-white tracking-wide">Modify Dispatched Payload</h3>
-            <input type="text" id="edit-message-input" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white focus:outline-none border border-transparent focus:border-[#00a884]">
+    <div id="edit-message-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card">
+            <h3 class="modal-title">Modify Dispatched Payload</h3>
+            <input type="text" id="edit-message-input" class="form-input">
             <input type="hidden" id="edit-message-target-id">
-            <div class="flex justify-end gap-2 text-xs pt-2">
-                <button onclick="closeModal('edit-message-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
-                <button onclick="executeMessagePayloadUpdate()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl hover:bg-[#008f72]">Save Revision</button>
+            <div class="modal-actions-footer">
+                <button onclick="closeModal('edit-message-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="executeMessagePayloadUpdate()" class="modal-btn-confirm">Save Revision</button>
             </div>
         </div>
     </div>
 
-    <div id="unpost-message-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-red-500/20 space-y-4 shadow-2xl text-center">
-            <h3 class="text-sm font-bold text-white">Unsend Data Packet?</h3>
-            <p class="text-xs text-[#8696a0]">This will permanently drop the text and attachments inside this specific packet frame.</p>
+    <div id="unpost-message-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card" style="text-align: center;">
+            <h3 class="modal-title">Unsend Data Packet?</h3>
+            <p class="modal-desc">This will permanently drop the text and attachments inside this specific packet frame.</p>
             <input type="hidden" id="unpost-message-target-id">
-            <div class="flex justify-center gap-3 text-xs pt-2">
-                <button onclick="closeModal('unpost-message-modal')" class="px-4 py-2 text-[#8696a0] hover:bg-[#111b21]/50 rounded-xl">Cancel</button>
-                <button onclick="executeMessageUnpost()" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600">Unsend Payload</button>
+            <div class="modal-actions-footer" style="justify-content: center;">
+                <button onclick="closeModal('unpost-message-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="executeMessageUnpost()" class="modal-btn-danger">Unsend Payload</button>
             </div>
         </div>
     </div>
 
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-md border border-[#222e35] space-y-5 shadow-2xl overflow-y-auto custom-scroll max-h-[90vh]">
-            <h3 class="text-lg font-bold text-white tracking-wide">Account settings matrix</h3>
+    <div id="profile-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card" style="max-height: 90vh; overflow-y: auto;">
+            <h3 class="modal-title" style="font-size: 16px;">Account Settings Matrix</h3>
             
-            <div class="flex flex-col items-center gap-3 border-b border-[#222e35]/40 pb-4">
-                <img id="edit-avatar-preview" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-24 h-24 rounded-full object-cover border-4 border-[#222e35]">
-                <label class="bg-[#202c33] text-[#e9edef] text-xs px-4 py-2 rounded-xl cursor-pointer hover:bg-[#2a3942] transition-all">Change Picture Pipeline<input type="file" accept="image/*" class="hidden" onchange="previewAndSetAvatar(this)"></label>
+            <div class="profile-matrix-avatar-row">
+                <img id="edit-avatar-preview" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="profile-matrix-preview">
+                <label class="profile-upload-anchor">Change Picture Pipeline<input type="file" accept="image/*" class="hidden" onchange="previewAndSetAvatar(this)"></label>
             </div>
 
-            <div class="space-y-3">
-                <input type="text" id="edit-name" placeholder="Display Profile Name" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
-                <input type="text" id="edit-username" placeholder="Unique Handle (username)" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="edit-name" placeholder="Display Profile Name" class="form-input">
+                <input type="text" id="edit-username" placeholder="Unique Handle (username)" class="form-input">
             </div>
 
-            <div class="border-t border-[#222e35]/40 pt-4 space-y-3">
-                <h4 class="text-sm font-semibold text-white">Change Password Token</h4>
-                <input type="password" id="edit-new-password" placeholder="New Password Cluster" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
-                <input type="password" id="edit-confirm-password" placeholder="Confirm New Password Cluster" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
+            <div class="profile-matrix-section">
+                <h4>Change Password Token</h4>
+                <input type="password" id="edit-new-password" placeholder="New Password Cluster" class="form-input">
+                <input type="password" id="edit-confirm-password" placeholder="Confirm New Password Cluster" class="form-input">
             </div>
 
-            <div class="border-t border-[#222e35]/40 pt-4 space-y-3">
-                <h4 class="text-sm font-semibold text-red-400">Danger Zone Operation</h4>
-                <button onclick="confirmAccountDeletion()" class="w-full bg-red-500/10 text-red-400 font-medium rounded-xl py-3 text-sm hover:bg-red-500 hover:text-white transition-all">Delete Account Permanently</button>
+            <div class="profile-matrix-section">
+                <h4 style="color: var(--danger);">Danger Zone Operation</h4>
+                <button onclick="confirmAccountDeletion()" class="modal-btn-danger" style="width: 100%;">Delete Account Permanently</button>
             </div>
 
-            <div class="flex justify-end gap-2.5 pt-1">
-                <button onclick="closeModal('profile-modal')" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#8696a0] hover:bg-[#111b21]/70">Cancel</button>
-                <button onclick="commitProfileUpdates()" class="px-5 py-2.5 bg-[#00a884] text-black font-semibold rounded-xl text-xs hover:bg-[#008f72]">Save Changes</button>
+            <div class="modal-actions-footer">
+                <button onclick="closeModal('profile-modal')" class="modal-btn-cancel">Cancel</button>
+                <button onclick="commitProfileUpdates()" class="modal-btn-confirm">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <div id="media-search-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-xl border border-[#222e35] space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h3 id="media-search-title" class="text-sm font-bold text-white"></h3>
-                <button onclick="closeModal('media-search-modal')" class="text-[#8696a0] hover:text-white text-xl">&times;</button>
+    <div id="media-search-modal" class="modal-backdrop hidden">
+        <div class="modal-body-card wide-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="media-search-title" class="modal-title"></h3>
+                <button onclick="closeModal('media-search-modal')" style="background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer;">&times;</button>
             </div>
-            <div class="relative">
-                <input type="text" id="media-search-input" placeholder="Query interface node arrays..." class="w-full bg-[#202c33] text-xs rounded-xl px-4 py-3 text-[#e9edef] placeholder-[#8696a0] border border-[#222e35] focus:outline-none">
-            </div>
-            <div id="media-search-results" class="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto custom-scroll p-1"></div>
+            <input type="text" id="media-search-input" placeholder="Query interface node arrays..." class="form-input">
+            <div id="media-search-results" class="media-search-grid-output"></div>
         </div>
     </div>
 
-    <div id="incoming-call-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[110] p-6">
-        <div class="flex flex-col items-center space-y-8 text-center">
-            <img id="incoming-caller-avatar" src="" class="w-32 h-32 rounded-full object-cover ring-8 ring-[#00a884]/20 animate-pulse">
-            <div class="space-y-1">
-                <h2 id="incoming-caller-name" class="text-2xl font-bold text-white tracking-wide"></h2>
-                <p id="incoming-call-type" class="text-sm text-[#00a884] font-medium tracking-widest uppercase"></p>
+    <div id="incoming-call-modal" class="modal-backdrop hidden" style="background-color: rgba(11,20,26,0.95);">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 32px; text-align: center;">
+            <img id="incoming-caller-avatar" src="" class="call-hud-avatar" style="border-color: rgba(0,168,132,0.2); animation: pulse-record 1s infinite alternate;">
+            <div>
+                <h2 id="incoming-caller-name" style="font-size: 24px; font-weight: 700; color: #fff;"></h2>
+                <p id="incoming-call-type" class="call-hud-status-str" style="margin-top: 4px;"></p>
             </div>
-            <div class="flex gap-10">
-                <button onclick="rejectIncomingCall()" class="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center shadow-xl hover:bg-red-600 transition-all transform hover:scale-105 active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
-                <button onclick="acceptIncomingCall()" class="w-20 h-20 rounded-full bg-[#00a884] text-black flex items-center justify-center shadow-xl hover:bg-[#008f72] transition-all transform hover:scale-105 active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="currentColor"/></svg></button>
+            <div style="display: flex; gap: 40px;">
+                <button onclick="rejectIncomingCall()" class="console-round-btn btn-active-hangup" style="transform: scale(1.1);"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
+                <button onclick="acceptIncomingCall()" class="console-round-btn" style="width: 64px; height: 64px; background-color: var(--accent-green); color: #000; border: none; transform: scale(1.1);"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="currentColor"/></svg></button>
             </div>
         </div>
     </div>
 
-    <div id="call-panel" class="hidden fixed inset-0 bg-[#0b141a]/95 backdrop-blur-md flex flex-col items-center justify-center z-[100] p-6">
-        <div class="w-full max-w-4xl h-full flex flex-col items-center space-y-6">
-            <div class="text-center space-y-2">
-                <div class="relative inline-block">
-                    <img id="call-peer-avatar" src="" class="w-24 h-24 rounded-full object-cover ring-4 ring-[#00a884] shadow-2xl">
-                    <div id="call-type-indicator" class="absolute -bottom-1 -right-1 bg-[#202c33] p-2 rounded-full border border-[#222e35] text-white flex items-center justify-center shadow-md"></div>
-                </div>
-                <h2 id="call-peer-name" class="text-xl font-bold text-white tracking-wide"></h2>
-                <p id="call-status-string" class="text-xs text-[#00a884] font-semibold tracking-widest uppercase">Connecting signaling matrix...</p>
-            </div>
+    <div id="call-panel" class="call-hud-matrix hidden">
+        <div class="call-hud-header">
+            <img id="call-peer-avatar" src="" class="call-hud-avatar">
+            <h2 id="call-peer-name" class="call-hud-peer-name"></h2>
+            <p id="call-status-string" class="call-hud-status-str">Connecting signaling matrix...</p>
+        </div>
 
-            <div id="video-streams" class="hidden w-full flex-1 grid grid-cols-2 gap-4 bg-[#111b21] rounded-2xl p-4 border border-[#222e35] shadow-inner relative">
-                <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40">
-                    <video id="remote-video-track" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Remote Stream Node</span>
-                </div>
-                <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40 transition-all duration-300" id="local-video-container">
-                    <video id="local-video-track" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Local client pipeline</span>
-                </div>
+        <div id="video-streams" class="call-hardware-grid hidden">
+            <div class="call-video-viewport">
+                <video id="remote-video-track" autoplay playsinline></video>
+                <span class="call-viewport-label">Remote Stream Node</span>
             </div>
-            
-            <div id="audio-visualizer" class="hidden w-full flex-1 flex items-center justify-center gap-1.5 p-10 bg-[#111b21] rounded-2xl border border-[#222e35]">
-                <div class="w-2.5 h-20 bg-[#00a884] rounded-full animate-pulse"></div>
-                <div class="w-2.5 h-32 bg-[#00a884]/80 rounded-full animate-pulse delay-75"></div>
-                <div class="w-2.5 h-40 bg-[#00a884] rounded-full animate-pulse delay-150"></div>
-                <div class="w-2.5 h-32 bg-[#00a884]/80 rounded-full animate-pulse delay-75"></div>
-                <div class="w-2.5 h-20 bg-[#00a884] rounded-full animate-pulse"></div>
+            <div class="call-video-viewport local-pipeline" id="local-video-container">
+                <video id="local-video-track" autoplay playsinline muted></video>
+                <span class="call-viewport-label">Local client pipeline</span>
             </div>
+        </div>
+        
+        <div id="audio-visualizer" class="call-audio-visualizer-pane hidden">
+            <div class="visualizer-bar-node v-1"></div>
+            <div class="visualizer-bar-node v-2"></div>
+            <div class="visualizer-bar-node v-3"></div>
+            <div class="visualizer-bar-node v-4"></div>
+            <div class="visualizer-bar-node v-5"></div>
+        </div>
 
-            <div class="flex items-center gap-4 p-4 bg-[#202c33] rounded-full border border-[#222e35] shadow-2xl z-20">
-                <button id="call-mic-btn" onclick="toggleLocalAudio()" class="w-12 h-12 rounded-full bg-[#111b21] text-white hover:bg-[#2a3942] flex items-center justify-center border border-[#222e35] transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg></button>
-                <button id="call-cam-btn" onclick="toggleLocalVideo()" class="hidden w-12 h-12 rounded-full bg-[#111b21] text-white hover:bg-[#2a3942] flex items-center justify-center border border-[#222e35] transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
-                <button onclick="terminateCall()" class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 flex items-center justify-center shadow-xl transform scale-105 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
-            </div>
+        <div class="call-control-console-bar">
+            <button id="call-mic-btn" onclick="toggleLocalAudio()" class="console-round-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg></button>
+            <button id="call-cam-btn" onclick="toggleLocalVideo()" class="console-round-btn hidden"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
+            <button onclick="terminateCall()" class="console-round-btn btn-active-hangup"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
         </div>
     </div>
     
@@ -446,6 +642,7 @@ video {
         const GIPHY_OPERATIONAL_KEY = "tH2BXmDEeZaOLVKx5epUQxvAsbVtKhnT";
 
         document.addEventListener("DOMContentLoaded", async () => {
+            // Explicit globally accessible linkage parameters
             window.submitAuthForm = submitAuthForm;
             window.toggleAuthMode = toggleAuthMode;
             window.terminateSession = terminateSession;
@@ -504,20 +701,20 @@ video {
         async function submitAuthForm() {
             const email = document.getElementById("auth-email").value.trim();
             const password = document.getElementById("auth-password").value.trim();
-            if(!email || !password) return showCustomNotification("System", "Parameters missing.", "error");
+            if(!email || !password) return showCustomNotification("System", "Parameters missing.");
 
             if(authState === "LOGIN") {
                 const { data, error } = await _client.auth.signInWithPassword({ email, password });
-                if(error) return showCustomNotification("Auth Error", error.message, "error");
+                if(error) return showCustomNotification("Auth Error", error.message);
                 localUser = data.user;
                 await bootAppInterfaceWorkspace();
             } else {
                 const name = document.getElementById("auth-name").value.trim();
                 const username = document.getElementById("auth-username").value.trim().toLowerCase();
-                if(!name || !username) return showCustomNotification("System", "Metadata missing.", "error");
+                if(!name || !username) return showCustomNotification("System", "Metadata missing.");
 
                 const { data, error } = await _client.auth.signUp({ email, password });
-                if(error) return showCustomNotification("Registration Fail", error.message, "error");
+                if(error) return showCustomNotification("Registration Fail", error.message);
                 
                 if(data.user) {
                     await _client.from("profiles").insert([{
@@ -587,20 +784,20 @@ video {
             const newPassword = document.getElementById("edit-new-password").value;
             const confirmPassword = document.getElementById("edit-confirm-password").value;
 
-            if(!updatedName || !updatedUsername) return showCustomNotification("Error", "Fields cannot be blank.", "error");
+            if(!updatedName || !updatedUsername) return showCustomNotification("Error", "Fields cannot be blank.");
 
             let profilePayload = { name: updatedName, username: updatedUsername };
             if(temporaryAvatarBlobBase64) profilePayload.profile_picture = temporaryAvatarBlobBase64;
 
             const { error: profileError } = await _client.from("profiles").update(profilePayload).eq("id", localUser.id);
-            if(profileError) return showCustomNotification("Update Error", profileError.message, "error");
+            if(profileError) return showCustomNotification("Update Error", profileError.message);
 
             if(newPassword) {
-                if(newPassword !== confirmPassword) return showCustomNotification("Auth Policy", "Passwords mismatch.", "error");
+                if(newPassword !== confirmPassword) return showCustomNotification("Auth Policy", "Passwords mismatch.");
                 await _client.auth.updateUser({ password: newPassword });
             }
 
-            showCustomNotification("Profile Engine", "Changes committed successfully.", "success");
+            showCustomNotification("Profile Engine", "Changes committed successfully.");
             closeModal('profile-modal');
             await bootAppInterfaceWorkspace();
         }
@@ -611,9 +808,6 @@ video {
         }
 
         async function populateSidebarChannels() {
-            const container = document.getElementById("channels-list");
-            if(!container) return;
-
             const { data: channels } = await _client.from("channels").select("*").order("created_at", { ascending: false });
             allChannelsList = [];
 
@@ -642,21 +836,22 @@ video {
 
         function renderSidebarChatsFromList(list) {
             const container = document.getElementById("channels-list");
+            if(!container) return;
             container.innerHTML = "";
             
             list.forEach(room => {
                 const elementNode = document.createElement("div");
-                elementNode.className = `flex items-center gap-3.5 p-4 cursor-pointer border-b border-[#222e35]/30 transition-all ${selectedChannel?.id === room.id ? 'bg-[#2a3942]' : 'hover:bg-[#202c33]/70'}`;
+                elementNode.className = `channel-list-item ${selectedChannel?.id === room.id ? 'active-node' : ''}`;
                 elementNode.onclick = () => mountActiveChatChannelTarget(room);
                 
                 elementNode.innerHTML = `
-                    <img src="${room._displayImg}" class="w-11 h-11 rounded-xl object-cover border border-[#222e35]/70 flex-shrink-0">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline">
-                            <h4 class="text-xs font-semibold text-[#e9edef] truncate tracking-wide">${room._displayName}</h4>
-                            <span class="text-[10px] text-[#8696a0] font-medium">${room._isPrivate ? 'Direct' : 'Group'}</span>
+                    <img src="${room._displayImg}" class="node-avatar-mask">
+                    <div class="node-info-block">
+                        <div class="node-header-row">
+                            <h4 class="truncate">${room._displayName}</h4>
+                            <span>${room._isPrivate ? 'Direct' : 'Group'}</span>
                         </div>
-                        <p class="text-[11px] text-[#8696a0] truncate mt-0.5">${room._displayHandle}</p>
+                        <p class="node-sub-handle truncate">${room._displayHandle}</p>
                     </div>
                 `;
                 container.appendChild(elementNode);
@@ -683,7 +878,7 @@ video {
         async function executePrivateChatCreation() {
             const handle = document.getElementById("new-private-handle").value.replace("@", "").trim().toLowerCase();
             const peer = allProfilesList.find(p => p.username === handle);
-            if(!peer) return showCustomNotification("Error", "Target user node missing.", "error");
+            if(!peer) return showCustomNotification("Error", "Target user node missing.");
 
             const uniqueStringId = [localUser.id, peer.id].sort().join("--");
             const { data: activeRooms } = await _client.from("channels").select("*").eq("name", uniqueStringId).eq("is_group", false);
@@ -716,14 +911,12 @@ video {
                 document.getElementById("active-room-avatar").src = "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
             }
 
-            document.getElementById("active-room-status").innerHTML = `<span>●</span> Cloud Sync Online`;
+            document.getElementById("active-room-status").innerHTML = `<span style="color:var(--accent-green)">●</span> Cloud Sync Online`;
             document.getElementById("input-dock").classList.remove("hidden");
             document.getElementById("call-actions").classList.remove("hidden"); 
 
             await extractRenderMessagesFlowChain();
             await markMessagesAsReadInChannel(channelObject.id);
-            
-            // Re-render sidebars to lock in selection colors
             renderSidebarChatsFromList(allChannelsList);
         }
 
@@ -742,57 +935,57 @@ video {
             payload?.forEach(message => {
                 const isOutgoing = message.sender_id === localUser.id;
                 const cardFrame = document.createElement("div");
-                cardFrame.className = `flex w-full ${isOutgoing ? 'justify-end' : 'justify-start'} items-end gap-2.5`;
+                cardFrame.className = `message-row-frame ${isOutgoing ? 'outgoing-frame' : 'incoming-frame'}`;
                 
                 const senderProfile = message.profiles;
                 const avatarImg = senderProfile ? senderProfile.profile_picture : "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
 
                 let attachmentMarkup = "";
                 if(message.media_type === "image") {
-                    attachmentMarkup = `<div class="relative overflow-hidden rounded-xl border border-white/10 max-w-xs my-1.5 bg-black cursor-zoom-in" onclick="launchImagePreviewModal('${message.media_url}')"><img src="${message.media_url}" class="max-h-48 w-full object-cover transition-all group-hover:scale-105"></div>`;
+                    attachmentMarkup = `<div class="attachment-image-container" onclick="launchImagePreviewModal('${message.media_url}')"><img src="${message.media_url}"></div>`;
                 } else if(message.media_type === "video") {
-                    attachmentMarkup = `<video src="${message.media_url}" controls class="rounded-xl max-w-xs max-h-48 border border-white/10 my-1.5"></video>`;
+                    attachmentMarkup = `<video src="${message.media_url}" controls class="attachment-video-node"></video>`;
                 } else if(message.media_type === "audio") {
-                    attachmentMarkup = `<div class="bg-[#182229] border border-[#2a3942] p-3 rounded-xl flex items-center gap-3 my-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aebac1" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg><audio src="${message.media_url}" controls class="w-44 h-7"></audio></div>`;
+                    attachmentMarkup = `<div class="attachment-audio-card"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aebac1" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg><audio src="${message.media_url}" controls></audio></div>`;
                 } else if(message.media_type === "music") {
                     const songMeta = message.media_metadata || { artist: "Unknown Node", title: "Audio Stream Track" };
                     attachmentMarkup = `
-                        <div class="bg-[#1e2a30] border border-[#00a884]/30 p-3 rounded-xl flex items-center gap-3 my-1.5 max-w-xs shadow-lg">
-                            <img src="${message.media_url || 'https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg'}" class="w-12 h-12 rounded-lg object-cover">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-white truncate">${songMeta.title}</p>
-                                <p class="text-[10px] text-[#8696a0] truncate mt-0.5">${songMeta.artist}</p>
-                                <button onclick="triggerInlineAudioPlayback('${message.media_url_raw}')" class="text-[10px] text-[#00a884] font-semibold flex items-center gap-1 mt-1.5 bg-[#202c33] px-2 py-0.5 rounded-md hover:bg-[#00a884] hover:text-black">Listen</button>
+                        <div class="attachment-music-card">
+                            <img src="${message.media_url || 'https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg'}" class="music-card-img">
+                            <div class="music-card-info">
+                                <p class="music-title truncate">${songMeta.title}</p>
+                                <p class="music-artist truncate">${songMeta.artist}</p>
+                                <button onclick="triggerInlineAudioPlayback('${message.media_url_raw}')" class="music-listen-btn">Listen</button>
                             </div>
                         </div>`;
                 } else if(message.media_type === "gif") {
-                    attachmentMarkup = `<img src="${message.media_url}" class="rounded-xl max-w-xs border border-white/10 my-1.5 shadow-md">`;
+                    attachmentMarkup = `<img src="${message.media_url}" style="border-radius:12px; max-w:280px; margin:6px 0; display:block;">`;
                 }
 
-                let visualReceiptMarker = isOutgoing ? (message.read_receipt ? '<span class="text-[#00a884] ml-1">✓✓</span>' : (message.delivered_receipt ? '<span class="text-[#8696a0] ml-1">✓✓</span>' : '<span class="text-[#8696a0] ml-1">✓</span>')) : "";
+                let visualReceiptMarker = isOutgoing ? (message.read_receipt ? '<span style="color:var(--accent-green); margin-left:4px;">✓✓</span>' : (message.delivered_receipt ? '<span style="color:var(--text-secondary); margin-left:4px;">✓✓</span>' : '<span style="color:var(--text-secondary); margin-left:4px;">✓</span>')) : "";
 
                 const bubbleContent = `
-                    <div class="px-3.5 py-2 rounded-2xl text-xs relative group ${isOutgoing ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none' : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}">
-                        ${!isOutgoing && selectedChannel.is_group ? `<span class="block text-[10px] font-bold text-[#00a884] mb-0.5">${senderProfile?.name || 'External'}</span>` : ''}
+                    <div class="bubble-wrapper">
+                        ${!isOutgoing && selectedChannel.is_group ? `<span class="bubble-group-label">${senderProfile?.name || 'External'}</span>` : ''}
                         ${attachmentMarkup}
-                        <p class="whitespace-pre-wrap break-words leading-relaxed text-slate-100">${message.is_deleted ? '<span class="text-[#8696a0] italic text-[11px]">Message unsent</span>' : (message.content || '')}</p>
-                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-[#8696a0] select-none">
+                        <p style="white-space: pre-wrap; break-word: break-all;">${message.is_deleted ? '<span class="bubble-unsent-string">Message unsent</span>' : (message.content || '')}</p>
+                        <div class="bubble-meta-row">
                             <span>${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             ${visualReceiptMarker}
                         </div>
                         ${isOutgoing && !message.is_deleted ? `
-                            <div class="absolute -top-3.5 right-2 hidden group-hover:flex items-center bg-[#233138] border border-[#222e35] rounded-xl p-0.5 shadow-xl z-20">
-                                <button onclick="modifyPostedMessage('${message.id}', '${escapeHtml(message.content || "")}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-[#8696a0] hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
-                                <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-red-400 hover:text-red-500" title="Delete Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                            <div class="bubble-hover-actions">
+                                <button onclick="modifyPostedMessage('${message.id}', '${escapeHtml(message.content || "")}')" class="bubble-action-trigger" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                                <button onclick="unpostPostedMessage('${message.id}')" class="bubble-action-trigger danger-trigger" title="Delete Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         ` : ''}
                     </div>
                 `;
 
                 if(isOutgoing) {
-                    cardFrame.innerHTML = bubbleContent + `<img src="${avatarImg}" class="w-7 h-7 rounded-full object-cover flex-none mb-1 ring-2 ring-[#005c4b]/50">`;
+                    cardFrame.innerHTML = bubbleContent + `<img src="${avatarImg}" class="bubble-micro-avatar">`;
                 } else {
-                    cardFrame.innerHTML = `<img src="${avatarImg}" class="w-7 h-7 rounded-full object-cover flex-none mb-1 ring-2 ring-[#2a3942]/70">` + bubbleContent;
+                    cardFrame.innerHTML = `<img src="${avatarImg}" class="bubble-micro-avatar">` + bubbleContent;
                 }
 
                 flowContainer.appendChild(cardFrame);
@@ -809,7 +1002,7 @@ video {
             const { error } = await _client.from("messages").insert([{
                 channel_id: selectedChannel.id, sender_id: localUser.id, content: text, media_url: url, media_url_raw: rawAudioUrl, media_type: type, media_metadata: metadata, delivered_receipt: true, read_receipt: false
             }]);
-            if(error) showCustomNotification("Transmission Fault", error.message, "error");
+            if(error) showCustomNotification("Transmission Fault", error.message);
         }
 
         function executeCurrentChatDeletion() {
@@ -855,9 +1048,6 @@ video {
             await _client.from("messages").update({ read_receipt: true }).eq("channel_id", channelId).not("sender_id", "eq", localUser.id);
         }
 
-        // =========================================================================
-        // REAL-TIME SYNC & SPY NETWORKS
-        // =========================================================================
         function configureRealtimeGlobalSubscriptions() {
             if(globalMsgSubscription) globalMsgSubscription.unsubscribe();
             if(broadcastTypingSubscription) broadcastTypingSubscription.unsubscribe();
@@ -884,20 +1074,20 @@ video {
                 
                 if(activeRTT_SpyHandle && activeRTT_SpyHandle.toLowerCase() === packet.payload.handler.toLowerCase()) {
                     if(packet.payload.isTyping) {
-                        statusBox.innerHTML = `<span class="text-red-400 animate-pulse">● Spy Node:</span> <span class="text-white font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#ef4444]/20">${packet.payload.rawBuffer}</span>`;
+                        statusBox.innerHTML = `<span style="color:var(--danger);" class="recording-pulse">● Spy Node:</span> <span style="font-family:monospace; background-color:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px;">${packet.payload.rawBuffer}</span>`;
                         const spyAudio = document.getElementById("rtt-spy-audio-node");
                         if(spyAudio.paused) spyAudio.play();
                     } else {
-                        statusBox.innerHTML = `<span class="text-red-400">● Spy Node:</span> Idle transmission line.`;
+                        statusBox.innerHTML = `<span style="color:var(--danger)">● Spy Node:</span> Idle transmission line.`;
                         document.getElementById("rtt-spy-audio-node").pause();
                     }
                     return;
                 }
 
                 if(packet.payload.isTyping) {
-                    statusBox.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-[#00a884] font-semibold">${packet.payload.senderName} is typing</span><div class="flex pt-0.5"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
+                    statusBox.innerHTML = `<span style="color:var(--accent-green); font-weight:500;">${packet.payload.senderName} is typing</span> <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
                 } else {
-                    statusBox.innerHTML = `<span>●</span> Cloud Sync Online`;
+                    statusBox.innerHTML = `<span style="color:var(--accent-green)">●</span> Cloud Sync Online`;
                 }
             }).subscribe();
 
@@ -939,7 +1129,7 @@ video {
                         if(currentCallSessionId === signal.sessionId || !currentCallSessionId) cleanAndKillHardwareCallTracks();
                         break;
                     case "BUSY_LINE":
-                        showCustomNotification("Routing Fault", "Remote node busy.", "error");
+                        showCustomNotification("Routing Fault", "Remote node busy.");
                         cleanAndKillHardwareCallTracks();
                         break;
                 }
@@ -979,8 +1169,8 @@ video {
 
             profiles.forEach(p => {
                 const option = document.createElement("div");
-                option.className = "px-4 py-2 text-xs hover:bg-[#00a884] hover:text-black cursor-pointer text-white flex items-center gap-2 border-b border-[#222e35]/30";
-                option.innerHTML = `<img src="${p.profile_picture}" class="w-5 h-5 rounded-md object-cover"> <span>@${p.username}</span>`;
+                option.className = "typeahead-row";
+                option.innerHTML = `<img src="${p.profile_picture}"> <span>@${p.username}</span>`;
                 option.onclick = () => selectUsernameSuggestion(p.username, matchedToken);
                 box.appendChild(option);
             });
@@ -1002,7 +1192,7 @@ video {
                     if (value.toLowerCase() === "/[stop_see]") {
                         activeRTT_SpyHandle = null;
                         document.getElementById("rtt-spy-audio-node").pause();
-                        showCustomNotification("Spy Node", "Real-time pipeline deactivated.", "success");
+                        showCustomNotification("Spy Node", "Real-time pipeline deactivated.");
                         document.activeElement.value = "";
                         return;
                     }
@@ -1010,7 +1200,7 @@ video {
                     const spyEvaluator = value.match(/^\/\[see_([a-zA-Z0-9_]+)\]$/i);
                     if(spyEvaluator) {
                         activeRTT_SpyHandle = spyEvaluator[1];
-                        showCustomNotification("Spy Node", `Active tracker placed on @${activeRTT_SpyHandle}.`, "success");
+                        showCustomNotification("Spy Node", `Active tracker placed on @${activeRTT_SpyHandle}.`);
                         document.activeElement.value = "";
                         return;
                     }
@@ -1049,7 +1239,7 @@ video {
                     };
                     audioRecorderInstance.start();
                     triggerBtn.classList.add("recording-pulse");
-                } catch(err) { showCustomNotification("Peripheral Fault", "Audio hardware permissions locked.", "error"); }
+                } catch(err) { showCustomNotification("Peripheral Fault", "Audio hardware permissions locked."); }
             } else { audioRecorderInstance.stop(); triggerBtn.classList.remove("recording-pulse"); }
         }
 
@@ -1081,18 +1271,17 @@ video {
                     const url = gif.images?.fixed_height?.url;
                     if(!url) return;
                     const containerNode = document.createElement("div");
-                    containerNode.className = "relative rounded-xl overflow-hidden cursor-pointer aspect-square bg-[#111b21] hover:ring-2 hover:ring-[#00a884] transition-all";
-                    containerNode.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+                    containerNode.className = "media-grid-item-cell";
+                    containerNode.innerHTML = `<img src="${url}">`;
                     containerNode.onclick = () => { triggerMediaAction(url, "gif"); closeModal("media-search-modal"); };
                     resultsBox.appendChild(containerNode);
                 });
             }
         }
 
-        // WebRTC Signaling Engine
         async function createNewCall(type) {
-            if(!targetedCallPeerId) return showCustomNotification("Signal Fault", "Group contexts do not support point-to-point hardware sync.", "error");
-            if(peerConnectionContext) return showCustomNotification("Resource Conflict", "Processing active line.", "error");
+            if(!targetedCallPeerId) return showCustomNotification("Signal Fault", "Group contexts do not support point-to-point hardware sync.");
+            if(peerConnectionContext) return showCustomNotification("Resource Conflict", "Processing active line.");
             
             isCallInitiator = true;
             currentCallSessionId = `call_${Date.now()}_${localUser.id}`;
@@ -1182,7 +1371,6 @@ video {
 
             const isVideo = type === "video";
             document.getElementById("video-streams").classList.toggle("hidden", !isVideo);
-            document.getElementById("video-streams").classList.toggle("grid", isVideo);
             document.getElementById("audio-visualizer").classList.toggle("hidden", isVideo);
             document.getElementById("call-cam-btn").classList.toggle("hidden", !isVideo);
         }
@@ -1192,7 +1380,7 @@ video {
             const track = localHardwareStream.getAudioTracks()[0];
             if(track) {
                 track.enabled = !track.enabled;
-                document.getElementById("call-mic-btn").classList.toggle("bg-red-500", !track.enabled);
+                document.getElementById("call-mic-btn").classList.toggle("hardware-muted", !track.enabled);
             }
         }
 
@@ -1201,8 +1389,8 @@ video {
             const track = localHardwareStream.getVideoTracks()[0];
             if(track) {
                 track.enabled = !track.enabled;
-                document.getElementById("call-cam-btn").classList.toggle("bg-red-500", !track.enabled);
-                document.getElementById("local-video-container").classList.toggle("opacity-20", !track.enabled);
+                document.getElementById("call-cam-btn").classList.toggle("hardware-muted", !track.enabled);
+                document.getElementById("local-video-container").style.opacity = track.enabled ? "1" : "0.2";
             }
         }
 
@@ -1224,8 +1412,8 @@ video {
         function showCustomNotification(title, content) {
             const parent = document.getElementById("notification-container");
             const card = document.createElement("div");
-            card.className = "p-4 bg-[#222e35] rounded-xl border border-[#00a884]/30 shadow-2xl flex gap-3 text-xs text-white transform transition-all duration-300 translate-x-4";
-            card.innerHTML = `<div class="flex-1 min-w-0"><p class="font-bold text-[#00a884]">${title}</p><p class="text-[#e9edef] mt-1 truncate">${content}</p></div>`;
+            card.className = "toast-notification-card";
+            card.innerHTML = `<p class="toast-title">${title}</p><p class="toast-body">${content}</p>`;
             parent.appendChild(card);
             setTimeout(() => card.remove(), 4000);
         }
@@ -1239,8 +1427,16 @@ video {
         }
         function launchImagePreviewModal(url) {
             const layover = document.createElement("div");
-            layover.className = "fixed inset-0 bg-black/95 z-[150] flex items-center justify-center p-4 cursor-zoom-out";
-            layover.innerHTML = `<div class="max-w-4xl max-h-[85vh]"><img src="${url}" class="object-contain max-h-[85vh] rounded-xl"></div>`;
+            layover.style.position = "fixed";
+            layover.style.inset = "0";
+            layover.style.backgroundColor = "rgba(0,0,0,0.95)";
+            layover.style.zIndex = "200";
+            layover.style.display = "flex";
+            layover.style.alignItems = "center";
+            layover.style.justifyContent = "center";
+            layover.style.padding = "16px";
+            layover.style.cursor = "zoom-out";
+            layover.innerHTML = `<img src="${url}" style="max-width:100%; max-height:85vh; object-fit:contain; border-radius:12px;">`;
             layover.onclick = () => layover.remove();
             document.body.appendChild(layover);
         }
