@@ -8,37 +8,157 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #374248; border-radius: 99px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f5d64; }
-        
-        .chat-input::placeholder { color: #8696a0; }
-        
-        .recording-pulse { 
-            animation: pulse-record 1s infinite ease-in-out; 
-            color: #ef4444 !important; 
-        }
-        @keyframes pulse-record {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(239,68,68,0)); }
-            50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(239,68,68,0.5)); }
-        }
+/* ========================================================================= */
+/* 1. TAILWIND DESIGN SYSTEM BASE LAYERS                                     */
+/* ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        .typing-dot { 
-            animation: typing 1.4s infinite; 
-            display: inline-block; 
-            width: 4px; height: 4px; 
-            border-radius: 50%; 
-            background-color: #8696a0; 
-            margin: 0 1px; 
-        }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing {
-          0% { opacity: 0.1; }
-          20% { opacity: 1; }
-          100% { opacity: 0.1; }
-        }
+:root {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ========================================================================= */
+/* 2. ENGINE SCROLLBAR OPTIMIZATION                                          */
+/* ========================================================================= */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374248;
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4f5d64;
+}
+
+/* For Firefox compatibility */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #374248 transparent;
+}
+
+/* ========================================================================= */
+/* 3. CHAT WORKSPACE & TYPING SYSTEM UTILITIES                              */
+/* ========================================================================= */
+.chat-input::placeholder {
+  color: #8696a0;
+}
+
+/* Inline Dynamic Bubble Animations */
+.typing-dot {
+  animation: typing-bounce 1.4s infinite;
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #8696a0;
+  margin: 0 1px;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-bounce {
+  0%, 100% {
+    opacity: 0.1;
+    transform: translateY(0px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* ========================================================================= */
+/* 4. PERIPHERAL PIPELINE AND RECORDING STATES                               */
+/* ========================================================================= */
+.recording-pulse {
+  animation: pulse-record-glow 1s infinite ease-in-out;
+  color: #ef4444 !important;
+}
+
+@keyframes pulse-record-glow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0));
+  }
+  50% {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+  }
+}
+
+/* ========================================================================= */
+/* 5. INTERFACE TRANSITION OVERLAYS & HUD LAYERS                             */
+/* ========================================================================= */
+.modal-backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Menu expansion animations */
+#media-menu:not(.hidden) {
+  animation: menu-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes menu-pop-in {
+  0% {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ========================================================================= */
+/* 6. WEBRTC MEDIA BUFFER GRAPHICS & VIDEO GRID                              */
+/* ========================================================================= */
+video {
+  background-color: #0b141a;
+  object-fit: cover;
+}
+
+.video-mirror-pipeline {
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+}
+
+/* Audio Waveform visualization nodes */
+#audio-visualizer div {
+  transition: height 0.15s ease-in-out;
+}
+
+/* ========================================================================= */
+/* 7. APP NOTIFICATION ENGINE TRANSFORMS                                     */
+/* ========================================================================= */
+#notification-container > div {
+  animation: toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toast-slide-in {
+  0% {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
     </style>
 </head>
 <body class="bg-[#0b141a] text-[#e9edef] h-screen w-screen overflow-hidden font-sans antialiased selection:bg-[#00a884]/30">
