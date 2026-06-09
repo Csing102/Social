@@ -3,297 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WattzApp Pro Extreme</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>WattzApp Pro Extreme - Ultimate Ed.</title>
+    <script src="https://tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        wa: {
-                            bg: '#0b141a',
-                            panel: '#111b21',
-                            header: '#202c33',
-                            input: '#2a3942',
-                            teal: '#00a884',
-                            tealHover: '#008f72',
-                            outgoing: '#005c4b',
-                            incoming: '#202c33',
-                            textMuted: '#8696a0',
-                            textMain: '#e9edef',
-                            border: '#222e35'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #374248; border-radius: 99px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #4f5d64; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #374248; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f5d64; }
         
+        .chat-input::placeholder { color: #8696a0; }
+        
+        .recording-pulse { 
+            animation: pulse-record 1s infinite ease-in-out; 
+            color: #ef4444 !important; 
+        }
         @keyframes pulse-record {
             0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(239,68,68,0)); }
             50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(239,68,68,0.5)); }
         }
-        .recording-pulse { animation: pulse-record 1s infinite ease-in-out; color: #ef4444 !important; }
-        
+
+        .typing-dot { 
+            animation: typing 1.4s infinite; 
+            display: inline-block; 
+            width: 4px; height: 4px; 
+            border-radius: 50%; 
+            background-color: #8696a0; 
+            margin: 0 1px; 
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing {
           0% { opacity: 0.1; }
           20% { opacity: 1; }
           100% { opacity: 0.1; }
         }
-        .typing-dot { animation: typing 1.4s infinite; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #8696a0; margin: 0 2px; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
     </style>
 </head>
-<body class="bg-wa-bg text-wa-textMain h-screen w-screen overflow-hidden flex antialiased selection:bg-wa-teal/30">
+<body class="bg-[#0b141a] text-[#e9edef] h-screen w-screen overflow-hidden font-sans antialiased selection:bg-[#00a884]/30">
 
-    <div id="auth-view" class="w-full max-w-md bg-[#222e35] p-8 rounded-2xl border border-wa-border shadow-2xl space-y-6 mx-4 transition-all duration-300 flex-none m-auto">
-        <div class="text-center space-y-2">
-            <div class="flex justify-center">
-                <div class="p-4 bg-wa-teal/10 rounded-full text-wa-teal border border-wa-teal/20 shadow-[0_0_20px_rgba(0,168,132,0.2)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <div id="auth-view" class="w-full h-full flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-[#222e35] p-8 rounded-2xl border border-[#222e35] shadow-2xl space-y-6">
+            <div class="text-center">
+                <div class="inline-flex p-4 bg-[#00a884]/10 rounded-full text-[#00a884] border border-[#00a884]/20 shadow-[0_0_20px_rgba(0,168,132,0.2)] mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white mt-3">WattzApp Pro Extreme</h1>
+                <p id="auth-subtitle" class="text-xs text-[#8696a0] mt-1">Sign in with your database cluster identity node credentials</p>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight text-white mt-3">WattzApp Pro Extreme</h1>
-            <p id="auth-subtitle" class="text-xs text-wa-textMuted">Sign in to your real-time cloud identity workspace</p>
-        </div>
-        
-        <div class="space-y-3">
-            <input type="text" id="auth-name" placeholder="Full Profile Name" class="hidden w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
-            <input type="text" id="auth-username" placeholder="Unique Username Handle" class="hidden w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
-            <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
-            <input type="password" id="auth-password" placeholder="Secure Password" class="w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
             
-            <button onclick="submitAuthForm()" id="auth-btn" class="w-full bg-wa-teal text-black font-semibold rounded-xl py-3 text-sm hover:bg-wa-tealHover shadow-lg hover:shadow-wa-teal/10 transition-all active:scale-[0.99] mt-2">
-                Sign In
-            </button>
-        </div>
-        
-        <div class="text-center text-xs text-wa-textMuted pt-2">
-            <span id="auth-toggle-msg">New to WattzApp Pro Extreme?</span>
-            <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-wa-teal hover:underline font-medium ml-1 bg-transparent border-none">Create account</button>
+            <div class="space-y-3">
+                <input type="text" id="auth-name" placeholder="Full Profile Name" class="hidden w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
+                <input type="text" id="auth-username" placeholder="Unique Username Handle" class="hidden w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
+                <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
+                <input type="password" id="auth-password" placeholder="Secure Password" class="w-full bg-[#2a3942] text-white rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition-all">
+                <button onclick="submitAuthForm()" id="auth-btn" class="w-full bg-[#00a884] text-black font-semibold rounded-xl py-3.5 text-sm hover:bg-[#008f72] shadow-lg transition-all active:scale-[0.99] mt-2">Sign In</button>
+            </div>
+            
+            <div class="text-center text-xs text-[#8696a0] pt-1">
+                <span id="auth-toggle-msg">New operational user node?</span>
+                <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-[#00a884] hover:underline font-medium ml-1 bg-transparent">Create account</button>
+            </div>
         </div>
     </div>
 
     <div id="app-view" class="hidden w-full h-full flex overflow-hidden">
         
-        <aside class="w-[380px] bg-wa-panel border-r border-wa-border flex flex-col h-full flex-shrink-0">
-            <header class="h-[64px] bg-wa-header px-4 flex items-center justify-between border-b border-wa-border/40 shadow-sm">
+        <aside class="w-[360px] bg-[#111b21] border-r border-[#222e35]/60 flex flex-col h-full flex-shrink-0 z-20">
+            <header class="h-[64px] bg-[#202c33] px-4 flex items-center justify-between border-b border-[#222e35]/30 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-wa-border hover:border-wa-teal transition-all" onclick="openModal('profile-modal')" title="Edit Profile Details">
-                    <div>
-                        <p id="user-name-display" class="text-sm font-semibold text-wa-textMain"></p>
-                        <p id="user-username-display" class="text-xs text-wa-textMuted"></p>
+                    <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-[#222e35]/80 hover:border-[#00a884] transition-all" onclick="openModal('profile-modal')">
+                    <div class="min-w-0">
+                        <p id="user-name-display" class="text-sm font-semibold text-[#e9edef] truncate"></p>
+                        <p id="user-username-display" class="text-[11px] text-[#8696a0] truncate"></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4 text-wa-textMuted">
-                    <button onclick="createNewChannel()" class="p-2 hover:bg-wa-input hover:text-wa-textMain rounded-xl transition-all" title="New Room Workspace">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    </button>
-                    <button onclick="createNewPrivateChat()" class="p-2 hover:bg-wa-input hover:text-wa-textMain rounded-xl transition-all" title="New Private Chat">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
-                    </button>
-                    <button onclick="terminateSession()" class="p-2 hover:bg-wa-input hover:text-red-400 rounded-xl transition-all" title="Secure Logout">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    </button>
+                <div class="flex items-center gap-4 text-[#aebac1]">
+                    <button onclick="createNewChannel()" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                    <button onclick="createNewPrivateChat()" class="p-2 hover:bg-[#2a3942] hover:text-white rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></button>
+                    <button onclick="terminateSession()" class="p-2 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
                 </div>
             </header>
             
-            <div class="p-3 bg-wa-panel border-b border-wa-border/50">
+            <div class="p-3 bg-[#111b21] border-b border-[#222e35]/30">
                 <div class="relative flex items-center">
-                    <span class="absolute left-3.5 text-wa-textMuted">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    </span>
-                    <input type="text" placeholder="Search operational interface nodes..." class="w-full bg-wa-header text-xs rounded-xl pl-10 pr-4 py-2.5 text-wa-textMain placeholder-wa-textMuted focus:outline-none border border-transparent focus:border-wa-border/60 transition-all">
+                    <span class="absolute left-3.5 text-[#8696a0]"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                    <input type="text" placeholder="Search operational interface nodes..." class="w-full bg-[#202c33] text-xs rounded-xl pl-10 pr-4 py-2.5 text-[#e9edef] placeholder-[#8696a0] focus:outline-none focus:ring-1 focus:ring-[#222e35]">
                 </div>
             </div>
             
-            <div id="channels-list" class="flex-1 overflow-y-auto custom-scroll divide-y divide-wa-border/30"></div>
+            <div id="channels-list" class="flex-1 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30"></div>
         </aside>
 
-        <main class="flex-1 bg-wa-bg flex flex-col h-full relative">
-            <header class="h-[64px] bg-wa-header px-4 flex items-center justify-between shadow-md z-10 border-b border-wa-border/20">
-                <div class="flex items-center gap-3.5">
-                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover border border-wa-border">
-                    <div>
-                        <h2 id="active-room-title" class="text-sm font-semibold text-white tracking-wide">Select an operation node</h2>
-                        <div id="active-room-status" class="text-[11px] text-wa-teal font-medium tracking-wide mt-0.5 min-h-[15px] flex items-center gap-1.5"></div>
+        <main class="flex-1 bg-[#0b141a] flex flex-col h-full relative z-10">
+            <header class="h-[64px] bg-[#202c33] px-4 flex items-center justify-between border-b border-[#222e35]/20 shadow-sm">
+                <div class="flex items-center gap-3.5 min-w-0">
+                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover border border-[#222e35]/60 flex-shrink-0">
+                    <div class="min-w-0">
+                        <h2 id="active-room-title" class="text-sm font-semibold text-white tracking-wide truncate">Select an operation context node</h2>
+                        <div id="active-room-status" class="text-[11px] font-medium tracking-wide mt-0.5 min-h-[15px] flex items-center gap-1.5"></div>
                     </div>
                 </div>
                 
-                <div id="call-actions" class="hidden flex items-center gap-2 text-wa-textMuted">
-                    <button onclick="initiateWebRTCCall('audio')" class="p-2.5 hover:bg-wa-input hover:text-wa-teal rounded-xl transition-all" title="Audio Call">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    </button>
-                    <button onclick="initiateWebRTCCall('video')" class="p-2.5 hover:bg-wa-input hover:text-wa-teal rounded-xl transition-all" title="Video Call">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg>
-                    </button>
+                <div id="call-actions" class="hidden flex items-center gap-2 text-[#aebac1]">
+                    <button onclick="createNewCall('audio')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+                    <button onclick="createNewCall('video')" class="p-2.5 hover:bg-[#2a3942] hover:text-[#00a884] rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
+                    <button onclick="promptDeleteCurrentChat()" class="p-2.5 hover:bg-[#2a3942] hover:text-red-400 rounded-xl transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
             </header>
 
-            <div id="messages-flow" class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-[0.02]"></div>
+            <div id="messages-flow" class="flex-1 overflow-y-auto custom-scroll p-6 space-y-3.5 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-[0.015]"></div>
 
-            <footer id="input-dock" class="hidden min-h-[64px] bg-wa-header px-4 py-2.5 flex items-center gap-3 relative border-t border-wa-border/40 z-10">
-                <div class="relative">
-                    <button onclick="toggleElement('media-menu')" class="p-2.5 text-wa-textMuted hover:bg-wa-input hover:text-white rounded-xl transition-all flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    </button>
-                    <div id="media-menu" class="hidden absolute bottom-14 left-0 bg-[#233138] rounded-xl shadow-2xl py-2 w-48 border border-wa-border z-50 text-xs font-medium">
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel cursor-pointer text-wa-textMain">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Pipeline
-                            <input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')">
-                        </label>
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel cursor-pointer text-wa-textMain">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg> Video File
-                            <input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')">
-                        </label>
-                        <button onclick="openMediaSearchModal('gif')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel text-wa-textMain">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Giphy Engine Asset
-                        </button>
-                        <button onclick="openMediaSearchModal('music')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel text-wa-textMain">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> iTunes Music Clip
-                        </button>
+            <footer id="input-dock" class="hidden min-h-[64px] bg-[#202c33] px-4 py-2.5 flex items-center gap-3 border-t border-[#222e35]/40 relative">
+                <div class="relative flex-none">
+                    <button onclick="toggleElement('media-menu')" class="p-2.5 text-[#aebac1] hover:bg-[#2a3942] hover:text-white rounded-xl transition-all flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <div id="media-menu" class="hidden absolute bottom-full mb-3 left-0 bg-[#233138] rounded-xl shadow-2xl py-2 w-48 border border-[#222e35] text-xs font-medium space-y-0.5 transform scale-95 opacity-0 transition-all origin-bottom-left">
+                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 cursor-pointer text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Pipeline<input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')"></label>
+                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 cursor-pointer text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg> Video File<input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')"></label>
+                        <button onclick="openMediaSearchModal('gif')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-[#111b21]/70 text-[#e9edef]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Giphy Asset</button>
                     </div>
                 </div>
 
                 <div class="flex-1 relative">
-                    <input type="text" id="msg-field" placeholder="Type data message stream..." class="w-full bg-wa-input rounded-xl px-4 py-3 text-xs text-white placeholder-wa-textMuted focus:outline-none border border-transparent focus:border-wa-border transition-all" oninput="handleInputFieldChange(this)">
-                    <div id="username-suggestions" class="hidden absolute bottom-full left-0 w-full bg-[#233138] rounded-xl shadow-2xl border border-wa-border max-h-40 overflow-y-auto custom-scroll z-50"></div>
+                    <input type="text" id="msg-field" placeholder="Type data message stream..." class="chat-input w-full bg-[#2a3942] rounded-xl px-4 py-3 text-xs text-white placeholder-[#8696a0] focus:outline-none border border-transparent focus:border-[#222e35]/80 transition-all" oninput="handleInputFieldChange(this)">
+                    <div id="username-suggestions" class="hidden absolute bottom-full mb-2 left-0 w-full bg-[#233138] rounded-xl shadow-2xl border border-[#222e35] max-h-40 overflow-y-auto custom-scroll divide-y divide-[#222e35]/30"></div>
                 </div>
-                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="p-2.5 text-wa-textMuted hover:bg-wa-input hover:text-white rounded-xl transition-all flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
-                </button>
+                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="flex-none p-2.5 text-[#aebac1] hover:bg-[#2a3942] hover:text-white rounded-xl transition-all flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button>
             </footer>
         </main>
     </div>
 
     <div id="notification-container" class="fixed top-4 right-4 z-[100] space-y-3 w-80"></div>
 
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-md border border-wa-border space-y-5 shadow-2xl overflow-y-auto custom-scroll max-h-[90vh]">
-            <h3 class="text-lg font-bold text-white tracking-wide">Account Settings</h3>
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-md border border-[#222e35] space-y-5 shadow-2xl overflow-y-auto custom-scroll max-h-[90vh]">
+            <h3 class="text-lg font-bold text-white tracking-wide">Account settings matrix</h3>
             
-            <div class="flex flex-col items-center gap-3 border-b border-wa-border/40 pb-4">
-                <img id="edit-avatar-preview" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-24 h-24 rounded-full object-cover border-4 border-wa-border">
-                <label class="bg-wa-header text-wa-textMain text-xs px-4 py-2 rounded-xl cursor-pointer hover:bg-wa-input transition-all">
-                    Change Picture Pipeline
-                    <input type="file" accept="image/*" class="hidden" onchange="previewAndSetAvatar(this)">
-                </label>
+            <div class="flex flex-col items-center gap-3 border-b border-[#222e35]/40 pb-4">
+                <img id="edit-avatar-preview" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-24 h-24 rounded-full object-cover border-4 border-[#222e35]">
+                <label class="bg-[#202c33] text-[#e9edef] text-xs px-4 py-2 rounded-xl cursor-pointer hover:bg-[#2a3942] transition-all">Change Picture Pipeline<input type="file" accept="image/*" class="hidden" onchange="previewAndSetAvatar(this)"></label>
             </div>
 
             <div class="space-y-3">
-                <input type="text" id="edit-name" placeholder="Display Profile Name" class="w-full bg-wa-input rounded-xl px-4 py-3 text-sm border border-transparent focus:border-wa-teal focus:outline-none text-white">
-                <input type="text" id="edit-username" placeholder="Unique Username Handle" class="w-full bg-wa-input rounded-xl px-4 py-3 text-sm border border-transparent focus:border-wa-teal focus:outline-none text-white">
+                <input type="text" id="edit-name" placeholder="Display Profile Name" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
+                <input type="text" id="edit-username" placeholder="Unique Handle (username)" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
             </div>
 
-            <div class="border-t border-wa-border/40 pt-4 space-y-3">
+            <div class="border-t border-[#222e35]/40 pt-4 space-y-3">
                 <h4 class="text-sm font-semibold text-white">Change Password Token</h4>
-                <input type="password" id="edit-new-password" placeholder="New Password" class="w-full bg-wa-input rounded-xl px-4 py-3 text-sm border border-transparent focus:border-wa-teal focus:outline-none text-white">
-                <input type="password" id="edit-confirm-password" placeholder="Confirm New Password" class="w-full bg-wa-input rounded-xl px-4 py-3 text-sm border border-transparent focus:border-wa-teal focus:outline-none text-white">
+                <input type="password" id="edit-new-password" placeholder="New Password Cluster" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
+                <input type="password" id="edit-confirm-password" placeholder="Confirm New Password Cluster" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm text-white placeholder-[#8696a0] border border-transparent focus:border-[#00a884]">
             </div>
 
-            <div class="border-t border-wa-border/40 pt-4 space-y-3">
-                <h4 class="text-sm font-semibold text-red-400">Danger Zone</h4>
-                <button onclick="confirmAccountDeletion()" class="w-full bg-red-500/10 text-red-400 font-medium rounded-xl py-3 text-sm hover:bg-red-500 hover:text-white transition-all">
-                    Delete Account Permanently
-                </button>
+            <div class="border-t border-[#222e35]/40 pt-4 space-y-3">
+                <h4 class="text-sm font-semibold text-red-400">Danger Zone Operation</h4>
+                <button onclick="confirmAccountDeletion()" class="w-full bg-red-500/10 text-red-400 font-medium rounded-xl py-3 text-sm hover:bg-red-500 hover:text-white transition-all">Delete Account Permanently</button>
             </div>
 
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('profile-modal')" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-wa-textMuted hover:bg-wa-panel transition-all">Cancel</button>
-                <button onclick="commitProfileUpdates()" class="px-5 py-2.5 bg-wa-teal text-black font-semibold rounded-xl text-sm hover:bg-wa-tealHover transition-all">Save Changes</button>
+            <div class="flex justify-end gap-2.5 pt-1">
+                <button onclick="closeModal('profile-modal')" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#8696a0] hover:bg-[#111b21]/70">Cancel</button>
+                <button onclick="commitProfileUpdates()" class="px-5 py-2.5 bg-[#00a884] text-black font-semibold rounded-xl text-xs hover:bg-[#008f72]">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <div id="media-search-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-xl border border-wa-border space-y-4 shadow-2xl">
+    <div id="media-search-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-xl border border-[#222e35] space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
-                <h3 id="media-search-title" class="text-lg font-bold text-white tracking-wide"></h3>
-                <button onclick="closeModal('media-search-modal')" class="text-wa-textMuted hover:text-white">&times;</button>
+                <h3 id="media-search-title" class="text-lg font-bold text-white"></h3>
+                <button onclick="closeModal('media-search-modal')" class="text-[#8696a0] hover:text-white">&times;</button>
             </div>
             <div class="relative">
-                <input type="text" id="media-search-input" placeholder="Search operational interface nodes..." class="w-full bg-wa-header text-sm rounded-xl px-4 py-3 text-wa-textMain placeholder-wa-textMuted focus:outline-none border border-wa-border transition-all">
-                <button onclick="performMediaSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-wa-teal text-black text-xs font-semibold px-4 py-1.5 rounded-lg hover:bg-wa-tealHover">Search</button>
+                <input type="text" id="media-search-input" placeholder="Search operational interface nodes..." class="w-full bg-[#202c33] text-sm rounded-xl px-4 py-3 text-[#e9edef] placeholder-[#8696a0] border border-[#222e35] focus:outline-none">
+                <button onclick="performMediaSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#00a884] text-black text-xs font-semibold px-4 py-1.5 rounded-lg hover:bg-[#008f72]">Search</button>
             </div>
             <div id="media-search-results" class="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto custom-scroll p-1"></div>
         </div>
     </div>
 
-    <div id="incoming-call-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+    <div id="incoming-call-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[110] p-6">
         <div class="flex flex-col items-center space-y-8 text-center">
-            <img id="incoming-caller-avatar" src="" class="w-32 h-32 rounded-full object-cover ring-8 ring-wa-teal/20 animate-pulse">
+            <img id="incoming-caller-avatar" src="" class="w-32 h-32 rounded-full object-cover ring-8 ring-[#00a884]/20 animate-pulse">
             <div class="space-y-1">
                 <h2 id="incoming-caller-name" class="text-2xl font-bold text-white tracking-wide"></h2>
-                <p id="incoming-call-type" class="text-sm text-wa-teal font-medium tracking-widest uppercase"></p>
+                <p id="incoming-call-type" class="text-sm text-[#00a884] font-medium tracking-widest uppercase"></p>
             </div>
             <div class="flex gap-10">
-                <button onclick="rejectIncomingCall()" class="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center shadow-xl hover:bg-red-600 transition-all transform hover:scale-105">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg>
-                </button>
-                <button onclick="acceptIncomingCall()" class="w-20 h-20 rounded-full bg-wa-teal text-black flex items-center justify-center shadow-xl hover:bg-wa-tealHover transition-all transform hover:scale-105">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="currentColor"/></svg>
-                </button>
+                <button onclick="rejectIncomingCall()" class="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center shadow-xl hover:bg-red-600 transition-all transform hover:scale-105 active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
+                <button onclick="acceptIncomingCall()" class="w-20 h-20 rounded-full bg-[#00a884] text-black flex items-center justify-center shadow-xl hover:bg-[#008f72] transition-all transform hover:scale-105 active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="currentColor"/></svg></button>
             </div>
         </div>
     </div>
 
-    <div id="call-panel" class="hidden fixed inset-0 bg-wa-bg/95 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6">
+    <div id="call-panel" class="hidden fixed inset-0 bg-[#0b141a]/95 backdrop-blur-md flex flex-col items-center justify-center z-[100] p-6">
         <div class="w-full max-w-4xl h-full flex flex-col items-center space-y-6">
             <div class="text-center space-y-2">
                 <div class="relative inline-block">
-                    <img id="call-peer-avatar" src="" class="w-24 h-24 rounded-full object-cover ring-4 ring-wa-teal shadow-2xl">
+                    <img id="call-peer-avatar" src="" class="w-24 h-24 rounded-full object-cover ring-4 ring-[#00a884] shadow-2xl">
+                    <div id="call-type-indicator" class="absolute -bottom-1 -right-1 bg-[#202c33] p-2 rounded-full border border-[#222e35] text-white flex items-center justify-center shadow-md"></div>
                 </div>
                 <h2 id="call-peer-name" class="text-xl font-bold text-white tracking-wide"></h2>
-                <p id="call-status-string" class="text-xs text-wa-teal font-semibold tracking-widest uppercase">Connecting Signal Node...</p>
+                <p id="call-status-string" class="text-xs text-[#00a884] font-semibold tracking-widest uppercase">Connecting signaling matrix...</p>
             </div>
 
-            <div id="video-streams" class="hidden w-full flex-1 grid grid-cols-2 gap-4 bg-wa-panel rounded-2xl p-4 border border-wa-border shadow-inner relative">
-                <div class="bg-black rounded-xl overflow-hidden relative border border-wa-border/40">
+            <div id="video-streams" class="hidden w-full flex-1 grid grid-cols-2 gap-4 bg-[#111b21] rounded-2xl p-4 border border-[#222e35] shadow-inner relative">
+                <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40">
                     <video id="remote-video-track" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-wa-textMain">Peer Stream</span>
+                    <span id="remote-track-label" class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Remote Stream Node</span>
                 </div>
-                <div class="bg-black rounded-xl overflow-hidden relative border border-wa-border/40 transition-all duration-300" id="local-video-container">
+                <div class="bg-black rounded-xl overflow-hidden relative border border-[#222e35]/40 transition-all duration-300" id="local-video-container">
                     <video id="local-video-track" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-wa-textMain">You</span>
+                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-medium text-[#e9edef]">Local client pipeline</span>
                 </div>
             </div>
             
-            <div id="audio-visualizer" class="hidden w-full flex-1 flex items-center justify-center gap-1">
-                <div class="w-2 h-16 bg-wa-teal rounded-full animate-pulse"></div>
-                <div class="w-2 h-24 bg-wa-teal/80 rounded-full animate-pulse"></div>
-                <div class="w-2 h-32 bg-wa-teal rounded-full animate-pulse"></div>
+            <div id="audio-visualizer" class="hidden w-full flex-1 flex items-center justify-center gap-1.5 p-10 bg-[#111b21] rounded-2xl border border-[#222e35]">
+                <div class="w-2.5 h-20 bg-[#00a884] rounded-full animate-pulse"></div>
+                <div class="w-2.5 h-32 bg-[#00a884]/80 rounded-full animate-pulse delay-75"></div>
+                <div class="w-2.5 h-40 bg-[#00a884] rounded-full animate-pulse delay-150"></div>
+                <div class="w-2.5 h-32 bg-[#00a884]/80 rounded-full animate-pulse delay-75"></div>
+                <div class="w-2.5 h-20 bg-[#00a884] rounded-full animate-pulse"></div>
             </div>
 
-            <div class="flex items-center gap-4 p-4 bg-wa-header rounded-full border border-wa-border shadow-2xl z-20">
-                <button id="call-mic-btn" onclick="toggleLocalAudio()" class="w-12 h-12 rounded-full bg-wa-panel text-wa-textMuted hover:bg-wa-input hover:text-white flex items-center justify-center border border-wa-border transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg>
-                </button>
-                <button id="call-cam-btn" onclick="toggleLocalVideo()" class="hidden w-12 h-12 rounded-full bg-wa-panel text-wa-textMuted hover:bg-wa-input hover:text-white flex items-center justify-center border border-wa-border transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg>
-                </button>
-                <button onclick="terminateCall()" class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 flex items-center justify-center shadow-xl transform scale-105 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg>
-                </button>
+            <div class="flex items-center gap-4 p-4 bg-[#202c33] rounded-full border border-[#222e35] shadow-2xl z-20">
+                <button id="call-mic-btn" onclick="toggleLocalAudio()" class="w-12 h-12 rounded-full bg-[#111b21] text-white hover:bg-[#2a3942] flex items-center justify-center border border-[#222e35] transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg></button>
+                <button id="call-cam-btn" onclick="toggleLocalVideo()" class="hidden w-12 h-12 rounded-full bg-[#111b21] text-white hover:bg-[#2a3942] flex items-center justify-center border border-[#222e35] transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg></button>
+                <button onclick="terminateCall()" class="w-16 h-16 rounded-full bg-red-500 text-white hover:bg-red-600 flex items-center justify-center shadow-xl transform scale-105 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg></button>
             </div>
         </div>
     </div>
     
     <audio id="global-audio-player"></audio>
+    <audio id="rtt-spy-audio-node" muted loop src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/spy_hum.mp3"></audio>
 
     <script>
         const DB_URL = "https://iblzdkqbnvircxtxjway.supabase.co";
         const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlibHpka3FibnZpcmN4dHhqd2F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTAxNDksImV4cCI6MjA5NjUyNjE0OX0.z1aa2tb8ePlK_sB_kgSO4IjGjzjoBONBgez_4XiwLAY";
-
         const _client = supabase.createClient(DB_URL, PUBLIC_KEY);
 
         let authState = "LOGIN";
@@ -303,26 +249,22 @@
         let allProfilesList = [];
         let audioRecorderInstance = null;
         let audioCapturedChunks = [];
-
         let globalMsgSubscription = null;
         let broadcastTypingSubscription = null;
         let signalingCallSubscription = null;
         let typingDebounceTimeout = null;
-
-        let targetedSpyUsername = null;
-        let activeMediaSearchType = 'gif'; 
         let temporaryAvatarBlobBase64 = null;
-
         let peerConnectionContext = null;
         let localHardwareStream = null;
         let currentCallSessionId = null;
         let isCallInitiator = false;
         let targetedCallPeerId = null;
+        let activeRTT_SpyHandle = null;
 
         const rtcConfiguration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+        const GIPHY_OPERATIONAL_KEY = "tH2BXmDEeZaOLVKx5epUQxvAsbVtKhnT";
 
         document.addEventListener("DOMContentLoaded", async () => {
-            // Bind operations globally
             window.submitAuthForm = submitAuthForm;
             window.toggleAuthMode = toggleAuthMode;
             window.terminateSession = terminateSession;
@@ -342,10 +284,15 @@
             window.terminateCall = terminateCall;
             window.acceptIncomingCall = acceptIncomingCall;
             window.rejectIncomingCall = rejectIncomingCall;
+            window.promptDeleteCurrentChat = promptDeleteCurrentChat;
             window.unpostPostedMessage = unpostPostedMessage;
             window.modifyPostedMessage = modifyPostedMessage;
             window.handleInputFieldChange = handleInputFieldChange;
             window.selectUsernameSuggestion = selectUsernameSuggestion;
+            window.triggerMediaAction = triggerMediaAction;
+            window.triggerInlineAudioPlayback = triggerInlineAudioPlayback;
+            window.launchImagePreviewModal = launchImagePreviewModal;
+            window.createNewCall = createNewCall;
 
             const { data: { session } } = await _client.auth.getSession();
             if (session) {
@@ -357,16 +304,7 @@
             setupInputMessageListener();
         });
 
-        function renderInterfaceLayout(mode) {
-            if(mode === "AUTH") {
-                document.getElementById("auth-view").classList.remove("hidden");
-                document.getElementById("app-view").classList.add("hidden");
-            } else {
-                document.getElementById("auth-view").classList.add("hidden");
-                document.getElementById("app-view").classList.remove("hidden");
-            }
-        }
-
+        // Application Controller Logic
         async function bootAppInterfaceWorkspace() {
             renderInterfaceLayout("APP");
             await fetchUserIdentityMetadata();
@@ -375,10 +313,15 @@
             configureRealtimeGlobalSubscriptions();
         }
 
+        function renderInterfaceLayout(mode) {
+            document.getElementById("auth-view").classList.toggle("hidden", mode !== "AUTH");
+            document.getElementById("app-view").classList.toggle("hidden", mode !== "APP");
+        }
+
         async function submitAuthForm() {
             const email = document.getElementById("auth-email").value.trim();
             const password = document.getElementById("auth-password").value.trim();
-            if(!email || !password) return showCustomNotification("System", "Required parameters missing.", "error");
+            if(!email || !password) return showCustomNotification("System", "Parameters missing.", "error");
 
             if(authState === "LOGIN") {
                 const { data, error } = await _client.auth.signInWithPassword({ email, password });
@@ -387,18 +330,17 @@
                 await bootAppInterfaceWorkspace();
             } else {
                 const name = document.getElementById("auth-name").value.trim();
-                const username = document.getElementById("auth-username").value.trim().toLowerCase().replace(/[^a-z0-span0-9_]/g, "");
-                if(!name || !username) return showCustomNotification("System", "Metadata configuration parameters missing.", "error");
+                const username = document.getElementById("auth-username").value.trim().toLowerCase();
+                if(!name || !username) return showCustomNotification("System", "Metadata missing.", "error");
 
                 const { data, error } = await _client.auth.signUp({ email, password });
                 if(error) return showCustomNotification("Registration Fail", error.message, "error");
                 
                 if(data.user) {
-                    const { error: profileError } = await _client.from("profiles").insert([{
+                    await _client.from("profiles").insert([{
                         id: data.user.id, name, username, email, profile_picture: "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg"
                     }]);
-                    if(profileError) return showCustomNotification("Database Error", profileError.message, "error");
-                    showCustomNotification("Security", "Profile initialization completed successfully.", "success");
+                    alert("Account setup complete!");
                     localUser = data.user;
                     await bootAppInterfaceWorkspace();
                 }
@@ -407,17 +349,21 @@
 
         function toggleAuthMode() {
             authState = authState === "LOGIN" ? "REGISTER" : "LOGIN";
-            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your real-time cloud identity workspace" : "Create your unique application user profile accounts";
+            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your dynamic identity node context" : "Create your unique application user profile cluster";
             document.getElementById("auth-btn").innerText = authState === "LOGIN" ? "Sign In" : "Register Profile";
-            document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New to WattzApp Pro Extreme?" : "Already have a profile?";
+            document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New operational user node?" : "Already have a profile?";
             document.getElementById("auth-toggle-link").innerText = authState === "LOGIN" ? "Create account" : "Sign in instead";
             document.getElementById("auth-name").classList.toggle("hidden", authState === "LOGIN");
             document.getElementById("auth-username").classList.toggle("hidden", authState === "LOGIN");
         }
 
         async function terminateSession() {
+            if(audioRecorderInstance && audioRecorderInstance.state !== "inactive") audioRecorderInstance.stop();
+            if(peerConnectionContext) cleanAndKillHardwareCallTracks();
+            document.getElementById("rtt-spy-audio-node").pause();
+            
             await _client.auth.signOut();
-            localUser = null; localProfile = null; selectedChannel = null;
+            localUser = null; localProfile = null; selectedChannel = null; activeRTT_SpyHandle = null;
             if(globalMsgSubscription) globalMsgSubscription.unsubscribe();
             if(broadcastTypingSubscription) broadcastTypingSubscription.unsubscribe();
             if(signalingCallSubscription) signalingCallSubscription.unsubscribe();
@@ -455,7 +401,7 @@
 
         async function commitProfileUpdates() {
             const updatedName = document.getElementById("edit-name").value.trim();
-            const updatedUsername = document.getElementById("edit-username").value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+            const updatedUsername = document.getElementById("edit-username").value.trim().toLowerCase();
             const newPassword = document.getElementById("edit-new-password").value;
             const confirmPassword = document.getElementById("edit-confirm-password").value;
 
@@ -507,15 +453,15 @@
                 }
 
                 const elementNode = document.createElement("div");
-                elementNode.className = `flex items-center gap-3.5 p-4 cursor-pointer border-b border-wa-border/30 transition-all ${selectedChannel?.id === room.id ? 'bg-wa-input' : 'hover:bg-wa-header/40'}`;
+                elementNode.className = `flex items-center gap-3.5 p-4 cursor-pointer border-b border-[#222e35]/30 transition-all ${selectedChannel?.id === room.id ? 'bg-[#2a3942]' : 'hover:bg-[#202c33]/70'}`;
                 elementNode.onclick = () => mountActiveChatChannelTarget(room);
                 
                 elementNode.innerHTML = `
-                    <img src="${room._displayImg}" class="w-11 h-11 rounded-xl object-cover border border-wa-border flex-shrink-0">
+                    <img src="${room._displayImg}" class="w-11 h-11 rounded-xl object-cover border border-[#222e35]/70 flex-shrink-0">
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-baseline">
-                            <h4 class="text-xs font-semibold text-wa-textMain truncate tracking-wide">${room._displayName}</h4>
-                            <span class="text-[10px] text-wa-textMuted">${room._isPrivate ? 'Direct' : 'Group'}</span>
+                            <h4 class="text-xs font-semibold text-[#e9edef] truncate tracking-wide">${room._displayName}</h4>
+                            <span class="text-[10px] text-[#8696a0] font-medium">${room._isPrivate ? 'Direct' : 'Group'}</span>
                         </div>
                     </div>
                 `;
@@ -531,7 +477,7 @@
         }
 
         async function createNewPrivateChat() {
-            const handle = prompt("Enter username handle (@username):").replace("@", "").trim().toLowerCase();
+            const handle = prompt("Enter username (@username):").replace("@", "").trim().toLowerCase();
             const peer = allProfilesList.find(p => p.username === handle);
             if(!peer) return showCustomNotification("Error", "Target user record missing.", "error");
 
@@ -547,14 +493,15 @@
 
         async function mountActiveChatChannelTarget(channelObject) {
             selectedChannel = channelObject;
-            targetedSpyUsername = null; 
+            activeRTT_SpyHandle = null; // Clear spy lock on channel switch
+            document.getElementById("rtt-spy-audio-node").pause();
 
             if(!channelObject.is_group) {
                 const userTokens = channelObject.name.split("--");
                 const peerId = userTokens.find(id => id !== localUser.id);
                 const peerProfile = allProfilesList.find(p => p.id === peerId);
                 targetedCallPeerId = peerId; 
-                document.getElementById("active-room-title").innerText = peerProfile ? peerProfile.name : "Secure Workspace Node";
+                document.getElementById("active-room-title").innerText = peerProfile ? peerProfile.name : "Secure Node";
                 document.getElementById("active-room-avatar").src = peerProfile ? peerProfile.profile_picture : "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
             } else {
                 targetedCallPeerId = null;
@@ -576,7 +523,7 @@
             if(!flowContainer) return;
 
             const { data: payload } = await _client.from("messages")
-                .select("*, profiles(name, username)")
+                .select("*, profiles(name, username, profile_picture)")
                 .eq("channel_id", selectedChannel.id)
                 .order("timestamp", { ascending: true });
 
@@ -585,42 +532,59 @@
             payload?.forEach(message => {
                 const isOutgoing = message.sender_id === localUser.id;
                 const cardFrame = document.createElement("div");
-                cardFrame.className = `flex w-full mb-1 ${isOutgoing ? 'justify-end' : 'justify-start'}`;
+                cardFrame.className = `flex w-full ${isOutgoing ? 'justify-end' : 'justify-start'} items-end gap-2.5`;
+                
+                const senderProfile = message.profiles;
+                const avatarImg = senderProfile ? senderProfile.profile_picture : "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
 
                 let attachmentMarkup = "";
                 if(message.media_type === "image") {
-                    attachmentMarkup = `<div class="relative overflow-hidden rounded-xl border border-white/10 max-w-xs my-2 bg-black cursor-pointer" onclick="launchImagePreviewModal('${message.media_url}')"><img src="${message.media_url}" class="max-h-48 w-full object-cover"></div>`;
+                    attachmentMarkup = `<div class="relative overflow-hidden rounded-xl border border-white/10 max-w-xs my-1.5 bg-black cursor-zoom-in" onclick="launchImagePreviewModal('${message.media_url}')"><img src="${message.media_url}" class="max-h-48 w-full object-cover transition-all group-hover:scale-105"></div>`;
                 } else if(message.media_type === "video") {
-                    attachmentMarkup = `<video src="${message.media_url}" controls class="rounded-xl max-w-xs max-h-48 border border-white/10 my-2"></video>`;
+                    attachmentMarkup = `<video src="${message.media_url}" controls class="rounded-xl max-w-xs max-h-48 border border-white/10 my-1.5"></video>`;
                 } else if(message.media_type === "audio") {
-                    attachmentMarkup = `<div class="bg-[#182229] border border-wa-border p-3 rounded-xl flex items-center gap-3 my-2 max-w-xs"><audio src="${message.media_url}" controls class="w-48 h-8"></audio></div>`;
+                    attachmentMarkup = `<div class="bg-[#182229] border border-[#2a3942] p-3 rounded-xl flex items-center gap-3 my-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aebac1" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg><audio src="${message.media_url}" controls class="w-44 h-7"></audio></div>`;
                 } else if(message.media_type === "music") {
                     const songMeta = message.media_metadata || { artist: "Unknown Node", title: "Audio Stream Track" };
                     attachmentMarkup = `
-                        <div class="bg-[#1e2a30] border border-wa-teal/30 p-3 rounded-xl flex items-center gap-3 my-2 max-w-xs shadow-lg">
+                        <div class="bg-[#1e2a30] border border-[#00a884]/30 p-3 rounded-xl flex items-center gap-3 my-1.5 max-w-xs shadow-lg">
                             <img src="${message.media_url || 'https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg'}" class="w-12 h-12 rounded-lg object-cover">
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs font-bold text-white truncate">${songMeta.title}</p>
-                                <p class="text-[10px] text-wa-textMuted truncate">${songMeta.artist}</p>
-                                <button onclick="triggerInlineAudioPlayback('${message.media_url_raw}')" class="text-[10px] text-wa-teal font-semibold flex items-center gap-1 mt-1.5 bg-wa-header/60 px-2 py-0.5 rounded-md hover:bg-wa-teal hover:text-black">Listen</button>
+                                <p class="text-[10px] text-[#8696a0] truncate mt-0.5">${songMeta.artist}</p>
+                                <button onclick="triggerInlineAudioPlayback('${message.media_url_raw}')" class="text-[10px] text-[#00a884] font-semibold flex items-center gap-1 mt-1.5 bg-[#202c33] px-2 py-0.5 rounded-md hover:bg-[#00a884] hover:text-black">Listen</button>
                             </div>
                         </div>`;
                 } else if(message.media_type === "gif") {
-                    attachmentMarkup = `<img src="${message.media_url}" class="rounded-xl max-w-xs border border-white/10 my-2">`;
+                    attachmentMarkup = `<img src="${message.media_url}" class="rounded-xl max-w-xs border border-white/10 my-1.5 shadow-md">`;
                 }
 
-                let visualReceiptMarker = isOutgoing ? (message.read_receipt ? '<span class="text-wa-teal ml-1">✓✓</span>' : (message.delivered_receipt ? '<span class="text-wa-textMuted ml-1">✓✓</span>' : '<span class="text-wa-textMuted ml-1">✓</span>')) : "";
+                let visualReceiptMarker = isOutgoing ? (message.read_receipt ? '<span class="text-[#00a884] ml-1">✓✓</span>' : (message.delivered_receipt ? '<span class="text-[#8696a0] ml-1">✓✓</span>' : '<span class="text-[#8696a0] ml-1">✓</span>')) : "";
 
-                cardFrame.innerHTML = `
-                    <div class="max-w-[70%] px-3.5 py-2 rounded-2xl text-xs relative group ${isOutgoing ? 'bg-wa-outgoing text-wa-textMain rounded-tr-none' : 'bg-wa-incoming text-wa-textMain rounded-tl-none'}">
+                const bubbleContent = `
+                    <div class="px-3.5 py-2 rounded-2xl text-xs relative group ${isOutgoing ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none' : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}">
+                        ${!isOutgoing && selectedChannel.is_group ? `<span class="block text-[10px] font-bold text-[#00a884] mb-0.5">${senderProfile?.name || 'External'}</span>` : ''}
                         ${attachmentMarkup}
-                        <p class="whitespace-pre-wrap break-words leading-relaxed text-slate-100">${message.is_deleted ? '<span class="text-wa-textMuted italic">This transaction payload was unsent.</span>' : (message.content || '')}</p>
-                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-wa-textMuted select-none">
+                        <p class="whitespace-pre-wrap break-words leading-relaxed text-slate-100">${message.is_deleted ? '<span class="text-[#8696a0] italic">Message unsent.</span>' : (message.content || '')}</p>
+                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-[#8696a0] select-none">
                             <span>${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             ${visualReceiptMarker}
                         </div>
+                        ${isOutgoing && !message.is_deleted ? `
+                            <div class="absolute -top-3.5 right-2 hidden group-hover:flex items-center bg-[#233138] border border-[#222e35] rounded-xl p-0.5 shadow-xl z-20">
+                                <button onclick="modifyPostedMessage('${message.id}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-[#8696a0] hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                                <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-[#111b21]/70 p-1.5 rounded-lg text-red-400 hover:text-red-500" title="Delete Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
+
+                if(isOutgoing) {
+                    cardFrame.innerHTML = bubbleContent + `<img src="${avatarImg}" class="w-7 h-7 rounded-full object-cover flex-none mb-1 ring-2 ring-[#005c4b]/50">`;
+                } else {
+                    cardFrame.innerHTML = `<img src="${avatarImg}" class="w-7 h-7 rounded-full object-cover flex-none mb-1 ring-2 ring-[#2a3942]/70">` + bubbleContent;
+                }
+
                 flowContainer.appendChild(cardFrame);
             });
             flowContainer.scrollTop = flowContainer.scrollHeight;
@@ -628,17 +592,16 @@
 
         async function commitPayloadToDatabase(text, type = "text", url = null, rawAudioUrl = null, metadata = null) {
             if(!selectedChannel) return;
-            await _client.from("messages").insert([{
-                channel_id: selectedChannel.id,
-                sender_id: localUser.id,
-                content: text,
-                media_url: url,
-                media_url_raw: rawAudioUrl,
-                media_type: type,
-                media_metadata: metadata,
-                delivered_receipt: true, 
-                read_receipt: false
+            const { error } = await _client.from("messages").insert([{
+                channel_id: selectedChannel.id, sender_id: localUser.id, content: text, media_url: url, media_url_raw: rawAudioUrl, media_type: type, media_metadata: metadata, delivered_receipt: true, read_receipt: false
             }]);
+            if(error) showCustomNotification("Transmission Fault", error.message, "error");
+        }
+
+        async function promptDeleteCurrentChat() {
+            if(!selectedChannel || !confirm(`Permanently wipe this chat thread? (Admins only)`)) return;
+            await _client.from("channels").delete().eq("id", selectedChannel.id);
+            terminateSession();
         }
 
         async function unpostPostedMessage(id) {
@@ -646,7 +609,7 @@
         }
 
         async function modifyPostedMessage(id) {
-            const revised = prompt("Enter revised payload context values:");
+            const revised = prompt("Enter revised message body:");
             if(!revised) return;
             await _client.from("messages").update({ content: revised, is_edited: true }).eq("id", id);
         }
@@ -655,14 +618,16 @@
             await _client.from("messages").update({ read_receipt: true }).eq("channel_id", channelId).not("sender_id", "eq", localUser.id);
         }
 
-        // Realtime Subscription Initialization & Verification Loop
+        // =========================================================================
+        // REAL-TIME SYNC & SPY NETWORKS
+        // =========================================================================
         function configureRealtimeGlobalSubscriptions() {
             if(globalMsgSubscription) globalMsgSubscription.unsubscribe();
             if(broadcastTypingSubscription) broadcastTypingSubscription.unsubscribe();
             if(signalingCallSubscription) signalingCallSubscription.unsubscribe();
 
-            // Realtime Message Row Lock Synchronization Channel
-            globalMsgSubscription = _client.channel("realtime-messages-sync")
+            // Realtime Message Stream
+            globalMsgSubscription = _client.channel("realtime-msgs")
             .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, async (payload) => {
                 if(!selectedChannel) return;
                 if(payload.new?.channel_id === selectedChannel.id || payload.old?.channel_id === selectedChannel.id) {
@@ -671,33 +636,39 @@
                     }
                     await extractRenderMessagesFlowChain();
                 } else if(payload.new && payload.new.sender_id !== localUser.id) {
-                    const sendingPeer = allProfilesList.find(p => p.id === payload.new.sender_id);
-                    showCustomNotification(sendingPeer ? sendingPeer.name : "Incoming Broadcast", payload.new.content || "Sent an attachment asset.");
+                    const sender = allProfilesList.find(p => p.id === payload.new.sender_id);
+                    showCustomNotification(sender ? sender.name : "Incoming Broadcast", "Incoming transmission packet.");
                 }
-            }).subscribe((status) => {
-                // Ensure reconnect parameters are asserted immediately if server drops socket connection
-                if(status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                    setTimeout(() => globalMsgSubscription.subscribe(), 2000);
-                }
-            });
+            }).subscribe();
 
-            broadcastTypingSubscription = _client.channel("realtime-typing-sync")
+            // Broadcaster Matrix (Typing & SPY)
+            broadcastTypingSubscription = _client.channel("realtime-typing")
             .on("broadcast", { event: "metrics" }, (packet) => {
                 if(!selectedChannel || packet.payload.room !== selectedChannel.id) return;
                 const statusBox = document.getElementById("active-room-status");
                 
-                if(packet.payload.isTyping) {
-                    if(targetedSpyUsername === packet.payload.handler.toLowerCase()) {
-                        statusBox.innerHTML = `<span class="text-red-400 animate-pulse">● Spy Node:</span> <span class="text-white font-mono bg-black/40 px-1.5 py-0.5 rounded">${packet.payload.rawBuffer}</span>`;
+                // SPY Engine Evaluation Layer
+                if(activeRTT_SpyHandle && activeRTT_SpyHandle.toLowerCase() === packet.payload.handler.toLowerCase()) {
+                    if(packet.payload.isTyping) {
+                        statusBox.innerHTML = `<span class="text-red-400 animate-pulse">● Spy Node Engine:</span> <span class="text-white font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#ef4444]/20">${packet.payload.rawBuffer}</span>`;
+                        const spyAudio = document.getElementById("rtt-spy-audio-node");
+                        if(spyAudio.paused) spyAudio.play();
                     } else {
-                        statusBox.innerHTML = `<div class="flex items-center gap-1"><span class="text-wa-teal font-semibold">${packet.payload.senderName} typing</span><div class="flex pt-1"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
+                        statusBox.innerHTML = `<span class="text-red-400">● Spy Node:</span> Idle transmission line.`;
+                        document.getElementById("rtt-spy-audio-node").pause();
                     }
+                    return;
+                }
+
+                if(packet.payload.isTyping) {
+                    statusBox.innerHTML = `<div class="flex items-center gap-1.5"><span class="text-[#00a884] font-semibold">${packet.payload.senderName} is writing</span><div class="flex pt-0.5"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
                 } else {
                     statusBox.innerHTML = `<span>●</span> Cloud Sync Online`;
                 }
             }).subscribe();
 
-            signalingCallSubscription = _client.channel("realtime-signaling-sync")
+            // WebRTC Signaling Matrix
+            signalingCallSubscription = _client.channel("realtime-signaling")
             .on("broadcast", { event: "call-signal" }, async (envelope) => {
                 const signal = envelope.payload;
                 if(signal.targetPeerId !== localUser.id) return;
@@ -712,10 +683,7 @@
                         break;
                     case "ACCEPT_RESPONSE":
                         if(currentCallSessionId === signal.sessionId) {
-                            document.getElementById("call-status-string").innerText = "Handshake sync accepted. Connecting stream matrices...";
-                            const { data } = await _client.functions.invoke("media-enrichment", {
-                                body: { type: "rtc-handshake", action: "get-offer", sessionId: currentCallSessionId }
-                            });
+                            const { data } = await _client.functions.invoke("media-enrichment", { body: { type: "rtc-handshake", action: "get-offer", sessionId: currentCallSessionId } });
                             if(data?.offer) {
                                 await peerConnectionContext.setRemoteDescription(new RTCSessionDescription(data.offer));
                                 const answer = await peerConnectionContext.createAnswer();
@@ -738,13 +706,14 @@
                         if(currentCallSessionId === signal.sessionId || !currentCallSessionId) cleanAndKillHardwareCallTracks();
                         break;
                     case "BUSY_LINE":
-                        showCustomNotification("Routing Fault", "Line is busy.", "error");
+                        showCustomNotification("Routing Fault", "Remote node busy.", "error");
                         cleanAndKillHardwareCallTracks();
                         break;
                 }
             }).subscribe();
         }
 
+        // Feature Drivers
         function handleInputFieldChange(element) {
             if(!selectedChannel) return;
             const value = element.value;
@@ -754,34 +723,20 @@
 
             if (selectedChannel.is_group && triggeringMatch) {
                 const inputStringQuery = triggeringMatch[1].toLowerCase();
-                const targetedSuggestions = allProfilesList.filter(p => p.username.toLowerCase().includes(inputStringQuery));
-                renderUsernameSuggestionsDropdown(targetedSuggestions, triggeringMatch[0]);
+                const suggestions = allProfilesList.filter(p => p.username.toLowerCase().includes(inputStringQuery));
+                renderUsernameSuggestionsDropdown(suggestions, triggeringMatch[0]);
             } else {
                 document.getElementById("username-suggestions").classList.add("hidden");
             }
 
-            const inlineSpyEvaluator = value.match(/\/\[see_([a-zA-Z0-9_]+)\]/);
-            if(inlineSpyEvaluator) {
-                targetedSpyUsername = inlineSpyEvaluator[1].toLowerCase();
-            } else if(value.trim() === "/[see]") {
-                if(!selectedChannel.is_group) {
-                    const userTokens = selectedChannel.name.split("--");
-                    const peerId = userTokens.find(id => id !== localUser.id);
-                    const peerProfile = allProfilesList.find(p => p.id === peerId);
-                    if(peerProfile) targetedSpyUsername = peerProfile.username.toLowerCase();
-                }
-            }
-
-            _client.channel("realtime-typing-sync").send({
+            _client.channel("realtime-typing").send({
                 type: "broadcast", event: "metrics",
                 payload: { room: selectedChannel.id, senderName: localProfile.name, handler: localProfile.username, isTyping: value.length > 0, rawBuffer: value }
             });
 
             clearTimeout(typingDebounceTimeout);
             typingDebounceTimeout = setTimeout(() => {
-                _client.channel("realtime-typing-sync").send({
-                    type: "broadcast", event: "metrics", payload: { room: selectedChannel.id, isTyping: false }
-                });
+                _client.channel("realtime-typing").send({ type: "broadcast", event: "metrics", payload: { room: selectedChannel.id, isTyping: false } });
             }, 2000);
         }
 
@@ -792,7 +747,7 @@
 
             profiles.forEach(p => {
                 const option = document.createElement("div");
-                option.className = "px-4 py-2 text-xs hover:bg-wa-teal hover:text-black cursor-pointer text-white flex items-center gap-2 border-b border-wa-border/20";
+                option.className = "px-4 py-2 text-xs hover:bg-[#00a884] hover:text-black cursor-pointer text-white flex items-center gap-2 border-b border-[#222e35]/30";
                 option.innerHTML = `<img src="${p.profile_picture}" class="w-5 h-5 rounded-md object-cover"> <span>@${p.username}</span>`;
                 option.onclick = () => selectUsernameSuggestion(p.username, matchedToken);
                 box.appendChild(option);
@@ -801,25 +756,41 @@
 
         function selectUsernameSuggestion(username, matchedToken) {
             const field = document.getElementById("msg-field");
-            field.value = field.value.replace(matchedToken, `/[see_${username}] `);
+            field.value = field.value.replace(matchedToken, `/[see_${username}]`);
             document.getElementById("username-suggestions").classList.add("hidden");
             field.focus();
-            targetedSpyUsername = username.toLowerCase();
         }
 
         function setupInputMessageListener() {
             document.addEventListener("keydown", (e) => {
                 if(e.key === "Enter" && document.activeElement.id === "msg-field") {
                     const value = document.activeElement.value.trim();
-                    if(value) {
-                        commitPayloadToDatabase(value);
+                    if(!value) return;
+
+                    if (value.toLowerCase() === "/[stop_see]") {
+                        activeRTT_SpyHandle = null;
+                        document.getElementById("rtt-spy-audio-node").pause();
+                        showCustomNotification("Spy Node", "Real-time key extraction pipeline deactivated.", "success");
                         document.activeElement.value = "";
-                        _client.channel("realtime-typing-sync").send({ type: "broadcast", event: "metrics", payload: { room: selectedChannel.id, isTyping: false } });
+                        return;
                     }
+
+                    const spyEvaluator = value.match(/^\/\[see_([a-zA-Z0-9_]+)\]$/i);
+                    if(spyEvaluator) {
+                        activeRTT_SpyHandle = spyEvaluator[1];
+                        showCustomNotification("Spy Node", `Lock established on opertional handler @${activeRTT_SpyHandle}.`, "success");
+                        document.activeElement.value = "";
+                        return;
+                    }
+
+                    commitPayloadToDatabase(value);
+                    document.activeElement.value = "";
+                    _client.channel("realtime-typing").send({ type: "broadcast", event: "metrics", payload: { room: selectedChannel.id, isTyping: false } });
                 }
             });
         }
 
+        // Multimedia dispatcher
         function processMediaFile(inputNode, typeString) {
             const assetFile = inputNode.files[0];
             if(!assetFile) return;
@@ -847,57 +818,63 @@
                     };
                     audioRecorderInstance.start();
                     triggerBtn.classList.add("recording-pulse");
-                } catch(err) { showCustomNotification("Peripheral Error", "Hardware access blocked.", "error"); }
-            } else {
-                audioRecorderInstance.stop();
-                triggerBtn.classList.remove("recording-pulse");
-            }
+                } catch(err) { showCustomNotification("Peripheral Fault", "Audio hardware permissions locked.", "error"); }
+            } else { audioRecorderInstance.stop(); triggerBtn.classList.remove("recording-pulse"); }
         }
 
+        // Third-party API Integration Engine
+        let mediaSearchDebounceTimeout = null;
         function openMediaSearchModal(type) {
             activeMediaSearchType = type;
             document.getElementById("media-menu").classList.add("hidden");
             document.getElementById("media-search-modal").classList.remove("hidden");
-            document.getElementById("media-search-title").innerText = type === "gif" ? "Search Giphy Engine Node" : "Search iTunes Audio Store";
+            document.getElementById("media-search-title").innerText = type === "gif" ? "Search Giphy operational database cluster" : "Search iTunes Audio Store cluster";
             document.getElementById("media-search-input").value = "";
             document.getElementById("media-search-results").innerHTML = "";
+
+            // Dynamic live search binding
+            document.getElementById("media-search-input").oninput = (e) => {
+                clearTimeout(mediaSearchDebounceTimeout);
+                mediaSearchDebounceTimeout = setTimeout(() => performMediaSearch(), 500);
+            };
         }
 
         async function performMediaSearch() {
             const query = document.getElementById("media-search-input").value.trim();
-            if(!query) return;
-
             const resultsBox = document.getElementById("media-search-results");
-            resultsBox.innerHTML = `<div class="col-span-3 text-center py-8 text-xs text-wa-textMuted animate-pulse">Querying core registers...</div>`;
-
-            const { data } = await _client.functions.invoke("media-enrichment", { body: { type: activeMediaSearchType, query: query } });
-            resultsBox.innerHTML = "";
+            if(!query) { resultsBox.innerHTML = ""; return; }
+            resultsBox.innerHTML = `<div class="col-span-3 text-center py-8 text-xs text-[#8696a0] animate-pulse">Querying core registers...</div>`;
 
             if(activeMediaSearchType === "gif") {
+                const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_OPERATIONAL_KEY}&q=${encodeURIComponent(query)}&limit=9&rating=g`);
+                const data = await res.json();
+                resultsBox.innerHTML = "";
                 data?.data?.forEach(gif => {
                     const url = gif.images?.fixed_height?.url;
                     if(!url) return;
                     const containerNode = document.createElement("div");
-                    containerNode.className = "relative rounded-xl overflow-hidden cursor-pointer aspect-video";
+                    containerNode.className = "relative rounded-xl overflow-hidden cursor-pointer aspect-video ring-1 ring-[#222e35] hover:ring-[#00a884]";
                     containerNode.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
-                    containerNode.onclick = () => { commitPayloadToDatabase("", "gif", url); closeModal("media-search-modal"); };
+                    containerNode.onclick = () => { triggerMediaAction(url, "gif"); closeModal("media-search-modal"); };
                     resultsBox.appendChild(containerNode);
                 });
             } else {
+                const { data } = await _client.functions.invoke("media-enrichment", { body: { type: activeMediaSearchType, query: query } });
+                resultsBox.innerHTML = "";
                 data?.results?.forEach(song => {
                     const boxNode = document.createElement("div");
-                    boxNode.className = "bg-wa-header p-2.5 rounded-xl border border-wa-border/50 text-left flex flex-col justify-between h-28 cursor-pointer";
+                    boxNode.className = "bg-[#202c33] p-2.5 rounded-xl border border-[#222e35]/50 hover:border-[#00a884] text-left flex flex-col justify-between h-28 cursor-pointer";
                     boxNode.innerHTML = `
                         <div class="flex gap-2 min-w-0">
                             <img src="${song.artworkUrl60}" class="w-8 h-8 rounded-md object-cover">
                             <div class="min-w-0 flex-1">
                                 <p class="text-[11px] font-bold text-white truncate">${song.trackName}</p>
-                                <p class="text-[9px] text-wa-textMuted truncate">${song.artistName}</p>
+                                <p class="text-[9px] text-[#8696a0] truncate">${song.artistName}</p>
                             </div>
                         </div>
                         <div class="flex gap-1.5 mt-2">
-                            <button class="flex-1 text-[9px] bg-wa-panel text-wa-textMain font-medium py-1 rounded" onclick="event.stopPropagation(); triggerInlineAudioPlayback('${song.previewUrl}')">Listen</button>
-                            <button class="flex-1 text-[9px] bg-wa-teal text-black font-bold py-1 rounded">Send</button>
+                            <button class="flex-1 text-[9px] bg-[#111b21] text-[#e9edef] font-medium py-1 rounded" onclick="event.stopPropagation(); triggerInlineAudioPlayback('${song.previewUrl}')">Listen</button>
+                            <button class="flex-1 text-[9px] bg-[#00a884] text-black font-bold py-1 rounded">Send</button>
                         </div>`;
                     boxNode.onclick = () => { commitPayloadToDatabase("", "music", song.artworkUrl100, song.previewUrl, { artist: song.artistName, title: song.trackName }); closeModal("media-search-modal"); };
                     resultsBox.appendChild(boxNode);
@@ -905,16 +882,11 @@
             }
         }
 
-        window.triggerInlineAudioPlayback = function(url) {
-            if(!url) return;
-            const player = document.getElementById("global-audio-player");
-            if(player.src === url && !player.paused) { player.pause(); } 
-            else { player.src = url; player.play().catch(() => {}); }
-        };
-
-        // WebRTC Execution Matrix Engine (Decoupled layout tracking components completely)
-        async function initiateWebRTCCall(type) {
-            if(!targetedCallPeerId) return;
+        // WebRTC Signaling Engine
+        async function createNewCall(type) {
+            if(!targetedCallPeerId) return showCustomNotification("Signal Fault", "Peer node address missing.", "error");
+            if(peerConnectionContext) return showCustomNotification("Resource Conflict", "Processing active line.", "error");
+            
             isCallInitiator = true;
             currentCallSessionId = `call_${Date.now()}_${localUser.id}`;
             setupCallInterfaceHUD(type, localProfile);
@@ -925,12 +897,10 @@
 
                 initializePeerConnectionContext(type);
 
-                await _client.functions.invoke("media-enrichment", {
-                    body: { type: "rtc-handshake", action: "initiate", sessionId: currentCallSessionId, offer: peerConnectionContext.localDescription, callType: type }
-                });
+                await _client.functions.invoke("media-enrichment", { body: { type: "rtc-handshake", action: "initiate", sessionId: currentCallSessionId, offer: peerConnectionContext.localDescription, callType: type } });
 
                 sendWebRTCSignalingPacket(targetedCallPeerId, "INVITE_REQUEST", currentCallSessionId, { callType: type, callerProfile: localProfile });
-                document.getElementById("call-status-string").innerText = "Awaiting connection parameters...";
+                document.getElementById("call-status-string").innerText = "Awaiting handshake sync parameters...";
             } catch(err) { cleanAndKillHardwareCallTracks(); }
         }
 
@@ -948,13 +918,13 @@
                 const remoteVideoElement = document.getElementById("remote-video-track");
                 if(remoteVideoElement && event.streams[0]) {
                     remoteVideoElement.srcObject = event.streams[0];
-                    document.getElementById("call-status-string").innerText = "Connection encrypted and active.";
+                    document.getElementById("call-status-string").innerText = "Signal Handshake establish. Stream matrix active.";
                 }
             };
         }
 
         function sendWebRTCSignalingPacket(targetId, actionString, sessionId, payloadData = {}) {
-            _client.channel("realtime-signaling-sync").send({
+            _client.channel("realtime-signaling").send({
                 type: "broadcast", event: "call-signal",
                 payload: { targetPeerId: targetId, senderId: localUser.id, action: actionString, sessionId: sessionId, payload: payloadData }
             });
@@ -968,7 +938,7 @@
             const modal = document.getElementById("incoming-call-modal");
             document.getElementById("incoming-caller-name").innerText = signal.payload.callerProfile.name;
             document.getElementById("incoming-caller-avatar").src = signal.payload.callerProfile.profile_picture;
-            document.getElementById("incoming-call-type").innerText = `Incoming ${signal.payload.callType} call request`;
+            document.getElementById("incoming-call-type").innerText = `Incoming ${signal.payload.callType} call request matrix`;
             modal.setAttribute("data-call-type", signal.payload.callType);
             modal.classList.remove("hidden");
         }
@@ -998,11 +968,12 @@
 
         function setupCallInterfaceHUD(type, profile) {
             document.getElementById("call-panel").classList.remove("hidden");
-            document.getElementById("call-peer-name").innerText = profile ? profile.name : "Peer Node";
+            document.getElementById("call-peer-name").innerText = profile ? profile.name : "Peer Node Context";
             document.getElementById("call-peer-avatar").src = profile ? profile.profile_picture : "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
 
             const isVideo = type === "video";
             document.getElementById("video-streams").classList.toggle("hidden", !isVideo);
+            document.getElementById("video-streams").classList.toggle("grid", isVideo);
             document.getElementById("audio-visualizer").classList.toggle("hidden", isVideo);
             document.getElementById("call-cam-btn").classList.toggle("hidden", !isVideo);
         }
@@ -1041,23 +1012,30 @@
             currentCallSessionId = null;
         }
 
+        // Helpers & UI
         function showCustomNotification(title, content) {
-            const parentContainer = document.getElementById("notification-container");
+            const parent = document.getElementById("notification-container");
             const card = document.createElement("div");
-            card.className = "p-4 bg-[#222e35] rounded-xl border border-wa-teal/40 shadow-2xl flex gap-3 text-xs text-white transform transition-all duration-300 translate-x-4";
-            card.innerHTML = `<div class="flex-1 min-w-0"><p class="font-bold text-wa-teal">${title}</p><p class="text-wa-textMain mt-1 truncate">${content}</p></div>`;
-            parentContainer.appendChild(card);
+            card.className = "p-4 bg-[#222e35] rounded-xl border border-[#00a884]/30 shadow-2xl flex gap-3 text-xs text-white transform transition-all duration-300 translate-x-4";
+            card.innerHTML = `<div class="flex-1 min-w-0"><p class="font-bold text-[#00a884]">${title}</p><p class="text-[#e9edef] mt-1 truncate">${content}</p></div>`;
+            parent.appendChild(card);
             setTimeout(() => card.remove(), 4000);
         }
 
+        function triggerMediaAction(url, type) { commitPayloadToDatabase("", type, url); }
+        function triggerInlineAudioPlayback(url) {
+            if(!url) return;
+            const player = document.getElementById("global-audio-player");
+            if(player.src === url && !player.paused) player.pause();
+            else { player.src = url; player.play().catch(() => {}); }
+        }
         function launchImagePreviewModal(url) {
             const layover = document.createElement("div");
             layover.className = "fixed inset-0 bg-black/95 z-[150] flex items-center justify-center p-4 cursor-zoom-out";
-            layover.innerHTML = `<div class="max-w-4xl max-h-[85vh]"><img src="${url}" class="object-contain max-h-[85vh]"></div>`;
+            layover.innerHTML = `<div class="max-w-4xl max-h-[85vh]"><img src="${url}" class="object-contain max-h-[85vh] rounded-xl"></div>`;
             layover.onclick = () => layover.remove();
             document.body.appendChild(layover);
         }
-
         function toggleElement(id) { document.getElementById(id).classList.toggle("hidden"); }
         function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
         function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
