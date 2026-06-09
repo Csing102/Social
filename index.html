@@ -3,137 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WattzApp Extreme</title>
+    <title>WattzApp Pro Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        wa: {
+                            bg: '#0b141a',
+                            panel: '#111b21',
+                            header: '#202c33',
+                            input: '#2a3942',
+                            teal: '#00a884',
+                            tealHover: '#008f72',
+                            outgoing: '#005c4b',
+                            incoming: '#202c33',
+                            textMuted: '#8696a0',
+                            textMain: '#e9edef',
+                            border: '#222e35'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        /* Ultra-cool Custom Scrollbars */
-        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+        /* Pro Custom Scrollbars */
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #374248; border-radius: 99px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #4f5d64; }
         
-        /* Subtle Pulsing Microphone Animation */
-        @keyframes pulse-mic {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.6; }
+        /* Mic Recording Pulse Animation */
+        @keyframes pulse-record {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(239,68,68,0)); }
+            50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(239,68,68,0.5)); }
         }
-        .recording { animation: pulse-mic 1s infinite ease-in-out; color: #ef4444 !important; }
+        .recording-pulse { animation: pulse-record 1s infinite ease-in-out; color: #ef4444 !important; }
     </style>
 </head>
-<body class="bg-[#0b141a] text-[#e9edef] h-screen w-screen overflow-hidden flex items-center justify-center selection:bg-[#00a884]/30">
+<body class="bg-wa-bg text-wa-textMain h-screen w-screen overflow-hidden flex items-center justify-center selection:bg-wa-teal/30 antialiased">
 
-    <div id="auth-view" class="w-full max-w-md bg-[#222e35] p-8 rounded-2xl border border-[#374248] shadow-2xl space-y-6 mx-4">
-        <div class="text-center">
-            <div class="text-5xl mb-3 drop-shadow-[0_0_15px_rgba(0,168,132,0.5)]">🟢</div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">WattzApp Web</h1>
-            <p id="auth-subtitle" class="text-xs text-[#8696a0] mt-1">Sign in with your database identity credentials</p>
+    <div id="auth-view" class="w-full max-w-md bg-[#222e35] p-8 rounded-2xl border border-wa-border shadow-2xl space-y-6 mx-4 transition-all duration-300">
+        <div class="text-center space-y-2">
+            <div class="flex justify-center">
+                <div class="p-4 bg-wa-teal/10 rounded-full text-wa-teal border border-wa-teal/20 shadow-[0_0_20px_rgba(0,168,132,0.2)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-white mt-3">WattzApp Pro</h1>
+            <p id="auth-subtitle" class="text-xs text-wa-textMuted">Sign in to your real-time cloud identity workspace</p>
         </div>
+        
         <div class="space-y-3">
-            <input type="text" id="auth-name" placeholder="Full Profile Name" class="hidden w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition">
-            <input type="text" id="auth-username" placeholder="Unique Username" class="hidden w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition">
-            <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition">
-            <input type="password" id="auth-password" placeholder="Secure Password" class="w-full bg-[#2a3942] rounded-xl px-4 py-3 text-sm placeholder-[#8696a0] border border-transparent focus:border-[#00a884] focus:outline-none transition">
-            <button onclick="submitAuthForm()" id="auth-btn" class="w-full bg-[#00a884] text-black font-semibold rounded-xl py-3 text-sm hover:bg-[#008f72] shadow-lg transition active:scale-[0.98]">Sign In</button>
+            <input type="text" id="auth-name" placeholder="Full Profile Name" class="hidden w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
+            <input type="text" id="auth-username" placeholder="Unique Username Handle" class="hidden w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
+            <input type="email" id="auth-email" placeholder="Email Address" class="w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
+            <input type="password" id="auth-password" placeholder="Secure Password" class="w-full bg-wa-input text-white rounded-xl px-4 py-3 text-sm placeholder-wa-textMuted border border-transparent focus:border-wa-teal focus:outline-none transition-all">
+            
+            <button onclick="submitAuthForm()" id="auth-btn" class="w-full bg-wa-teal text-black font-semibold rounded-xl py-3 text-sm hover:bg-wa-tealHover shadow-lg hover:shadow-wa-teal/10 transition-all active:scale-[0.99] mt-2">
+                Sign In
+            </button>
         </div>
-        <div class="text-center text-xs text-[#8696a0]">
-            <span id="auth-toggle-msg">New to our application platform?</span>
-            <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-[#00a884] hover:underline font-medium ml-1">Create account</button>
+        
+        <div class="text-center text-xs text-wa-textMuted pt-2">
+            <span id="auth-toggle-msg">New to WattzApp Pro?</span>
+            <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-wa-teal hover:underline font-medium ml-1 bg-transparent border-none">Create account</button>
         </div>
     </div>
 
     <div id="app-view" class="hidden w-full h-full flex overflow-hidden">
         
-        <aside class="w-[380px] bg-[#111b21] border-r border-[#222e35] flex flex-col h-full flex-shrink-0">
-            <header class="h-[60px] bg-[#202c33] px-4 flex items-center justify-between border-b border-[#222e35]/30">
-                <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full cursor-pointer object-cover ring-2 ring-[#374248]" onclick="openModal('profile-modal')">
-                <div class="flex items-center gap-5 text-[#aebac1]">
-                    <button onclick="createNewChannel()" class="hover:text-white transition text-lg" title="Create Room">➕</button>
-                    <button onclick="terminateSession()" class="hover:text-[#ef4444] transition text-lg" title="Logout">🚪</button>
+        <aside class="w-[400px] bg-wa-panel border-r border-wa-border flex flex-col h-full flex-shrink-0">
+            <header class="h-[64px] bg-wa-header px-4 flex items-center justify-between border-b border-wa-border/40 shadow-sm">
+                <img id="user-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-wa-border hover:border-wa-teal transition-all" onclick="openModal('profile-modal')" title="Edit Profile Details">
+                <div class="flex items-center gap-4 text-wa-textMuted">
+                    <button onclick="createNewChannel()" class="p-2 hover:bg-wa-input hover:text-wa-textMain rounded-xl transition-all" title="New Room Workspace">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <button onclick="terminateSession()" class="p-2 hover:bg-wa-input hover:text-red-400 rounded-xl transition-all" title="Secure Logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    </button>
                 </div>
             </header>
-            <div class="p-2 bg-[#111b21] border-b border-[#222e35]/60">
-                <input type="text" placeholder="Search or initiate chat nodes..." class="w-full bg-[#202c33] text-xs rounded-xl px-3 py-2 text-[#e9edef] placeholder-[#8696a0] focus:outline-none">
+            
+            <div class="p-3 bg-wa-panel border-b border-wa-border/50">
+                <div class="relative flex items-center">
+                    <span class="absolute left-3.5 text-wa-textMuted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" placeholder="Search operational interface nodes..." class="w-full bg-wa-header text-xs rounded-xl pl-10 pr-4 py-2.5 text-wa-textMain placeholder-wa-textMuted focus:outline-none border border-transparent focus:border-wa-border/60 transition-all">
+                </div>
             </div>
-            <div id="channels-list" class="flex-1 overflow-y-auto custom-scroll"></div>
+            
+            <div id="channels-list" class="flex-1 overflow-y-auto custom-scroll divide-y divide-wa-border/30"></div>
         </aside>
 
-        <main class="flex-1 bg-[#0b141a] flex flex-col h-full relative">
-            <header class="h-[60px] bg-[#202c33] px-4 flex items-center justify-between shadow-md z-10">
-                <div class="flex items-center gap-3">
-                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover">
+        <main class="flex-1 bg-wa-bg flex flex-col h-full relative">
+            <header class="h-[64px] bg-wa-header px-4 flex items-center justify-between shadow-md z-10 border-b border-wa-border/20">
+                <div class="flex items-center gap-3.5">
+                    <img id="active-room-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-10 h-10 rounded-full object-cover border border-wa-border">
                     <div>
-                        <h2 id="active-room-title" class="text-sm font-semibold text-white">Select an operation node</h2>
-                        <p id="active-room-status" class="text-[11px] text-[#8696a0] min-h-[14px] font-medium"></p>
+                        <h2 id="active-room-title" class="text-sm font-semibold text-white tracking-wide">Select an active context node</h2>
+                        <p id="active-room-status" class="text-[11px] text-wa-teal font-medium tracking-wide mt-0.5 min-h-[15px]"></p>
                     </div>
                 </div>
-                <div id="call-actions" class="hidden flex items-center gap-4 text-[#aebac1]">
-                    <button onclick="initiateWebRTCCall('audio')" class="hover:text-[#00a884] text-lg" title="Voice Call">📞</button>
-                    <button onclick="initiateWebRTCCall('video')" class="hover:text-[#00a884] text-xl" title="Video Call">📹</button>
+                
+                <div id="call-actions" class="hidden flex items-center gap-2 text-wa-textMuted">
+                    <button onclick="initiateWebRTCCall('audio')" class="p-2.5 hover:bg-wa-input hover:text-wa-teal rounded-xl transition-all" title="Audio WebRTC Uplink">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </button>
+                    <button onclick="initiateWebRTCCall('video')" class="p-2.5 hover:bg-wa-input hover:text-wa-teal rounded-xl transition-all" title="Video Stream Sync">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg>
+                    </button>
                 </div>
             </header>
 
-            <div id="messages-flow" class="flex-1 overflow-y-auto custom-scroll p-6 space-y-3 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-[0.03]"></div>
+            <div id="messages-flow" class="flex-1 overflow-y-auto custom-scroll p-6 space-y-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-opacity-[0.02]"></div>
 
-            <footer id="input-dock" class="hidden min-h-[60px] bg-[#202c33] px-4 py-2 flex items-center gap-3 relative border-t border-[#222e35]/30">
+            <footer id="input-dock" class="hidden min-h-[64px] bg-wa-header px-4 py-2.5 flex items-center gap-3 relative border-t border-wa-border/40 z-10">
                 <div class="relative">
-                    <button onclick="toggleElement('media-menu')" class="text-[#aebac1] hover:text-white text-xl p-1 transition">📎</button>
-                    <div id="media-menu" class="hidden absolute bottom-14 left-0 bg-[#233138] rounded-xl shadow-2xl py-2 w-44 border border-[#374248] z-50 text-xs font-medium">
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#182229] cursor-pointer text-[#e9edef]">🖼️ Image <input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')"></label>
-                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-[#182229] cursor-pointer text-[#e9edef]">🎥 Video <input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')"></label>
-                        <button onclick="invokeEdgeFunction('gif')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-[#182229]">👾 Giphy Asset</button>
-                        <button onclick="invokeEdgeFunction('music')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-[#182229]">🎵 iTunes Sample</button>
+                    <button onclick="toggleElement('media-menu')" class="p-2.5 text-wa-textMuted hover:bg-wa-input hover:text-white rounded-xl transition-all flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div id="media-menu" class="hidden absolute bottom-14 left-0 bg-[#233138] rounded-xl shadow-2xl py-2 w-48 border border-wa-border z-50 text-xs font-medium animate-fade-in">
+                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel cursor-pointer text-wa-textMain">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Image Pipeline
+                            <input type="file" accept="image/*" class="hidden" onchange="processMediaFile(this, 'image')">
+                        </label>
+                        <label class="flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel cursor-pointer text-wa-textMain">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg> Video File
+                            <input type="file" accept="video/*" class="hidden" onchange="processMediaFile(this, 'video')">
+                        </label>
+                        <button onclick="invokeEdgeFunction('gif')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel text-wa-textMain">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" w="18" h="18" rx="2" ry="2"/><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg> Giphy Engine Asset
+                        </button>
+                        <button onclick="invokeEdgeFunction('music')" class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-wa-panel text-wa-textMain">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> iTunes Music Clip
+                        </button>
                     </div>
                 </div>
 
-                <input type="text" id="msg-field" placeholder="Type a message..." class="flex-1 bg-[#2a3942] rounded-xl px-4 py-2.5 text-xs text-white placeholder-[#8696a0] focus:outline-none transition" oninput="broadcastTypingMetrics(this)">
-                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="text-[#aebac1] hover:text-white text-lg p-1 transition">🎙️</button>
+                <input type="text" id="msg-field" placeholder="Type data message stream..." class="flex-1 bg-wa-input rounded-xl px-4 py-3 text-xs text-white placeholder-wa-textMuted focus:outline-none border border-transparent focus:border-wa-border transition-all" oninput="broadcastTypingMetrics(this)">
+                <button id="mic-trigger" onclick="handleVoiceNoteRecording()" class="p-2.5 text-wa-textMuted hover:bg-wa-input hover:text-white rounded-xl transition-all flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+                </button>
             </footer>
         </main>
     </div>
 
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-[#374248] space-y-4 shadow-2xl">
-            <h3 class="text-base font-bold text-white">Modify System Identity</h3>
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-[#222e35] rounded-2xl p-6 w-full max-w-sm border border-wa-border space-y-4 shadow-2xl">
+            <h3 class="text-base font-bold text-white tracking-wide">Edit Context Metadata</h3>
             <div class="space-y-2">
-                <input type="text" id="edit-name" placeholder="Display Name Mapping" class="w-full bg-[#2a3942] rounded-xl px-3 py-2.5 text-xs border border-transparent focus:border-[#00a884] focus:outline-none text-white">
-                <input type="text" id="edit-pic" placeholder="Profile Image Absolute Public URL" class="w-full bg-[#2a3942] rounded-xl px-3 py-2.5 text-xs border border-transparent focus:border-[#00a884] focus:outline-none text-white">
+                <input type="text" id="edit-name" placeholder="Display Profile Name" class="w-full bg-wa-input rounded-xl px-3 py-2.5 text-xs border border-transparent focus:border-wa-teal focus:outline-none text-white">
+                <input type="text" id="edit-pic" placeholder="Profile Image Absolute URL" class="w-full bg-wa-input rounded-xl px-3 py-2.5 text-xs border border-transparent focus:border-wa-teal focus:outline-none text-white">
             </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeModal('profile-modal')" class="px-4 py-2 rounded-xl text-xs font-semibold text-[#8696a0] hover:bg-[#182229]">Cancel</button>
-                <button onclick="commitProfileUpdates()" class="px-4 py-2 bg-[#00a884] text-black font-semibold rounded-xl text-xs hover:bg-[#008f72]">Save Changes</button>
+            <div class="flex justify-end gap-2 pt-1">
+                <button onclick="closeModal('profile-modal')" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-wa-textMuted hover:bg-wa-panel transition-all">Cancel</button>
+                <button onclick="commitProfileUpdates()" class="px-4 py-2.5 bg-wa-teal text-black font-semibold rounded-xl text-xs hover:bg-wa-tealHover transition-all">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <div id="call-panel" class="hidden fixed inset-0 bg-[#0b141a]/95 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6 animate-fade-in">
-        <div class="w-full max-w-xl flex flex-col items-center space-y-6">
+    <div id="call-panel" class="hidden fixed inset-0 bg-wa-bg/95 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6">
+        <div class="w-full max-w-2xl flex flex-col items-center space-y-6">
             <div class="text-center space-y-2">
                 <div class="relative inline-block">
-                    <img id="call-peer-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-24 h-24 rounded-full object-cover ring-4 ring-[#00a884] animate-pulse">
-                    <div id="call-type-indicator" class="absolute -bottom-1 -right-1 bg-[#202c33] p-1.5 rounded-full border border-[#374248] text-sm">📞</div>
+                    <img id="call-peer-avatar" src="https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg" class="w-24 h-24 rounded-full object-cover ring-4 ring-wa-teal shadow-2xl">
+                    <div id="call-type-indicator" class="absolute -bottom-1 -right-1 bg-wa-header p-2 rounded-full border border-wa-border text-white flex items-center justify-center shadow-md"></div>
                 </div>
-                <h2 id="call-peer-name" class="text-xl font-bold text-white">Target Connection</h2>
-                <p id="call-status-string" class="text-xs text-[#00a884] font-semibold tracking-wider uppercase">Connecting Signal Node...</p>
+                <h2 id="call-peer-name" class="text-xl font-bold text-white tracking-wide">Node Connection Room Target</h2>
+                <p id="call-status-string" class="text-xs text-wa-teal font-semibold tracking-widest uppercase">Initializing Signaling Channels...</p>
             </div>
 
-            <div id="video-streams" class="hidden w-full grid grid-cols-2 gap-4 h-64 bg-[#111b21] rounded-xl p-3 border border-[#222e35]">
-                <div class="bg-black rounded-lg overflow-hidden relative shadow-inner">
+            <div id="video-streams" class="hidden w-full grid grid-cols-2 gap-4 h-72 bg-wa-panel rounded-2xl p-3 border border-wa-border shadow-inner">
+                <div class="bg-black rounded-xl overflow-hidden relative border border-wa-border/40">
                     <video id="local-video-track" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
-                    <span class="absolute bottom-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[10px] font-medium tracking-wide">You</span>
+                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-medium text-wa-textMain">Local client Stream</span>
                 </div>
-                <div class="bg-black rounded-lg overflow-hidden relative shadow-inner">
+                <div class="bg-black rounded-xl overflow-hidden relative border border-wa-border/40">
                     <video id="remote-video-track" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <span id="remote-track-label" class="absolute bottom-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[10px] font-medium tracking-wide">Peer</span>
+                    <span class="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-medium text-wa-textMain">Remote Peer Stream</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-6 pt-4">
-                <button id="call-mute-btn" onclick="toggleLocalAudioMuteState()" class="w-12 h-12 rounded-full bg-[#202c33] text-white hover:bg-[#2a3942] flex items-center justify-center border border-[#374248] transition text-lg" title="Mute Microphone">🎙️</button>
-                <button onclick="terminateActiveWebRTCCall()" class="w-14 h-14 rounded-full bg-[#ef4444] text-white hover:bg-[#dc2626] flex items-center justify-center shadow-lg transform hover:scale-105 active:scale-95 transition text-xl" title="Disconnect Call">🤙</button>
+            <div class="flex items-center gap-4 pt-2">
+                <button id="call-mute-btn" onclick="toggleLocalAudioMuteState()" class="w-12 h-12 rounded-xl bg-wa-header text-wa-textMuted hover:bg-wa-input hover:text-white flex items-center justify-center border border-wa-border transition-all shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v10a3 3 0 0 0 3-3V1a3 3 0 0 0-6 0v7a3 3 0 0 0 3 3H12z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/></svg>
+                </button>
+                <button onclick="terminateActiveWebRTCCall()" class="w-14 h-14 rounded-xl bg-red-500 text-white hover:bg-red-600 flex items-center justify-center shadow-xl shadow-red-500/10 transform hover:scale-105 active:scale-95 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91" fill="currentColor"/></svg>
+                </button>
             </div>
         </div>
     </div>
@@ -149,12 +215,10 @@
         let selectedChannel = null;
         let audioRecorderInstance = null;
         let audioCapturedChunks = [];
-        let peerConnectionInstance = null;
         let primaryMediaStreamTrack = null;
         let typingDebounceTimeout = null;
         let targetedSpyRoomId = null;
 
-        // On Application Startup Mount Hook
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await _client.auth.getSession();
             if (session) {
@@ -165,7 +229,6 @@
             }
         });
 
-        // Application Layout Presentation Swapper
         function renderInterfaceLayout(mode) {
             if(mode === "AUTH") {
                 document.getElementById("auth-view").classList.remove("hidden");
@@ -179,9 +242,9 @@
 
         window.toggleAuthMode = function() {
             authState = authState === "LOGIN" ? "REGISTER" : "LOGIN";
-            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in with your database identity credentials" : "Create your unique application user profile accounts";
+            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your real-time cloud identity workspace" : "Create your unique application user profile accounts";
             document.getElementById("auth-btn").innerText = authState === "LOGIN" ? "Sign In" : "Register Profile";
-            document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New to our application platform?" : "Already have a profile?";
+            document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New to WattzApp Pro?" : "Already have a profile?";
             document.getElementById("auth-toggle-link").innerText = authState === "LOGIN" ? "Create account" : "Sign in instead";
             document.getElementById("auth-name").classList.toggle("hidden", authState === "LOGIN");
             document.getElementById("auth-username").classList.toggle("hidden", authState === "LOGIN");
@@ -209,7 +272,7 @@
                     await _client.from("profiles").insert([{
                         id: data.user.id, name, username, email, password_hash: "handled_internally"
                     }]);
-                    alert("Account setup complete! Logging into dashboard view.");
+                    alert("Account setup complete!");
                     localUser = data.user;
                     renderInterfaceLayout("APP");
                 }
@@ -223,7 +286,6 @@
             renderInterfaceLayout("AUTH");
         };
 
-        // Initialize Chat Workspace Setup Logic 
         async function bootAppInterfaceWorkspace() {
             fetchUserIdentityMetadata();
             await populateSidebarChannels();
@@ -247,13 +309,15 @@
 
             rooms?.forEach(room => {
                 const node = document.createElement("div");
-                node.className = `flex items-center gap-3 p-3.5 cursor-pointer hover:bg-[#202c33]/70 border-b border-[#222e35]/40 transition ${selectedChannel?.id === room.id ? 'bg-[#2a3942]' : ''}`;
+                node.className = `flex items-center gap-3.5 p-4 cursor-pointer hover:bg-wa-header/60 border-b border-wa-border/30 transition-all ${selectedChannel?.id === room.id ? 'bg-wa-input' : ''}`;
                 node.onclick = () => mountActiveChatChannelTarget(room);
                 node.innerHTML = `
-                    <div class="w-11 h-11 rounded-full bg-[#2a3942] flex items-center justify-center text-lg font-bold text-[#8696a0] select-none">👥</div>
+                    <div class="w-11 h-11 rounded-xl bg-wa-header flex items-center justify-center text-wa-textMuted font-bold border border-wa-border flex-shrink-0 select-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-xs font-semibold text-[#e9edef] truncate">${room.name || 'Group Workspace'}</h4>
-                        <p class="text-[11px] text-[#8696a0] truncate mt-0.5">Click to access workspace data tracks</p>
+                        <h4 class="text-xs font-semibold text-wa-textMain truncate tracking-wide">${room.name || 'Group Room Node'}</h4>
+                        <p class="text-[11px] text-wa-textMuted truncate mt-1">Click to sync live session data tracks</p>
                     </div>
                 `;
                 targetDomContainer.appendChild(node);
@@ -263,7 +327,7 @@
         async function mountActiveChatChannelTarget(channelObject) {
             selectedChannel = channelObject;
             document.getElementById("active-room-title").innerText = channelObject.name;
-            document.getElementById("active-room-status").innerText = "Online Node Connected";
+            document.getElementById("active-room-status").innerText = "Cloud Sync Online";
             document.getElementById("input-dock").classList.remove("hidden");
             document.getElementById("call-actions").classList.remove("hidden");
             
@@ -287,21 +351,21 @@
                 let computationalMarkup = "";
                 if(message.media_type === "image") computationalMarkup = `<img src="${message.media_url}" class="rounded-xl max-w-xs max-h-56 object-cover shadow border border-white/5 my-1.5 block">`;
                 if(message.media_type === "video") computationalMarkup = `<video src="${message.media_url}" controls class="rounded-xl max-w-xs max-h-56 shadow border border-white/5 my-1.5 block"></video>`;
-                if(message.media_type === "audio") computationalMarkup = `<div class="bg-[#182229] border border-[#2a3942] p-2.5 rounded-xl flex items-center gap-3 my-1.5"><span class="text-base">🎵</span><audio src="${message.media_url}" controls class="w-40 h-7"></audio></div>`;
+                if(message.media_type === "audio") computationalMarkup = `<div class="bg-[#182229] border border-wa-border p-3 rounded-xl flex items-center gap-3 my-1.5"><span class="text-wa-teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span><audio src="${message.media_url}" controls class="w-44 h-7"></audio></div>`;
 
                 messageCard.innerHTML = `
-                    <div class="max-w-[70%] px-3 py-2 rounded-2xl text-xs relative group ${outgoingFlag ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none' : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}">
-                        <span class="block text-[10px] font-bold text-[#00a884] mb-0.5">${message.profiles?.name || 'Peer User'}</span>
+                    <div class="max-w-[70%] px-3.5 py-2.5 rounded-2xl text-xs relative group ${outgoingFlag ? 'bg-wa-outgoing text-wa-textMain rounded-tr-none' : 'bg-wa-incoming text-wa-textMain rounded-tl-none'}">
+                        <span class="block text-[10px] font-bold text-wa-teal mb-0.5">${message.profiles?.name || 'User Node'}</span>
                         ${computationalMarkup}
-                        <p class="whitespace-pre-wrap break-words leading-relaxed">${message.is_deleted ? '<span class="text-[#8696a0] italic">This transmission payload was unsent.</span>' : message.content || ''}</p>
-                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-[#8696a0]">
+                        <p class="whitespace-pre-wrap break-words leading-relaxed">${message.is_deleted ? '<span class="text-wa-textMuted italic">This transaction payload was unsent.</span>' : message.content || ''}</p>
+                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-wa-textMuted">
                             <span>${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             ${message.is_edited && !message.is_deleted ? '<span>• (edited)</span>' : ''}
                         </div>
                         ${outgoingFlag && !message.is_deleted ? `
-                            <div class="absolute -top-3 right-2 hidden group-hover:flex items-center gap-1 bg-[#233138] border border-[#374248] rounded-lg p-1 shadow-xl z-20">
-                                <button onclick="modifyPostedMessage('${message.id}')" class="hover:bg-[#182229] p-1 rounded" title="Edit text">✏️</button>
-                                <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-[#182229] p-1 rounded text-red-400" title="Unsend payload">🗑️</button>
+                            <div class="absolute -top-3.5 right-2.5 hidden group-hover:flex items-center bg-[#233138] border border-wa-border rounded-xl p-0.5 shadow-xl z-20">
+                                <button onclick="modifyPostedMessage('${message.id}')" class="hover:bg-wa-panel p-1.5 rounded-lg text-wa-textMuted hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                                <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-wa-panel p-1.5 rounded-lg text-red-400 hover:text-red-500" title="Unsend Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                             </div>
                         ` : ''}
                     </div>
@@ -311,9 +375,7 @@
             displayStream.scrollTop = displayStream.scrollHeight;
         }
 
-        // Realtime Pipelines Handling Mutations
         function configureRealtimeDataStreamingChannels() {
-            // Messages Pipeline Listener
             _client.channel("public:messages")
             .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, async (payload) => {
                 if(selectedChannel && (payload.new?.channel_id === selectedChannel.id || payload.old?.channel_id === selectedChannel.id)) {
@@ -321,21 +383,19 @@
                 }
             }).subscribe();
 
-            // Broadcast Pipeline for [see] Live Typing Functionality
             _client.channel("public:typing")
             .on("broadcast", { event: "metrics" }, (payload) => {
                 if(!selectedChannel || payload.payload.room !== selectedChannel.id) return;
                 
                 const statusBox = document.getElementById("active-room-status");
                 if (payload.payload.isTyping) {
-                    // [see] live key logic intercept tracking
                     if (targetedSpyRoomId === selectedChannel.id || payload.payload.text.includes("[see]")) {
-                        statusBox.innerText = `${payload.payload.senderName} typing: "${payload.payload.text}"`;
+                        statusBox.innerText = `${payload.payload.senderName} writing: "${payload.payload.text}"`;
                     } else {
                         statusBox.innerText = `${payload.payload.senderName} is writing text...`;
                     }
                 } else {
-                    statusBox.innerText = "Online Node Connected";
+                    statusBox.innerText = "Cloud Sync Online";
                 }
             }).subscribe();
         }
@@ -344,7 +404,6 @@
             if(!selectedChannel) return;
             const textualContent = element.value;
 
-            // Activate localized structural hook tracking if user initializes the string tag
             if(textualContent.trim() === "[see]") {
                 targetedSpyRoomId = selectedChannel.id;
             }
@@ -370,7 +429,6 @@
             }, 1800);
         };
 
-        // Base64 File Conversions Engine Pipe Processing
         window.processMediaFile = function(inputNode, typeString) {
             const directTargetFile = inputNode.files[0];
             if(!directTargetFile) return;
@@ -378,13 +436,11 @@
             const processingStreamReader = new FileReader();
             processingStreamReader.readAsDataURL(directTargetFile);
             processingStreamReader.onload = async () => {
-                const computedBase64Payload = processingStreamReader.result;
-                await commitPayloadToDatabase("", typeString, computedBase64Payload);
+                await commitPayloadToDatabase("", typeString, processingStreamReader.result);
                 document.getElementById("media-menu").classList.add("hidden");
             };
         };
 
-        // Voice Note Audio Capture Handling Loop 
         window.handleVoiceNoteRecording = async function() {
             const componentTriggerBtn = document.getElementById("mic-trigger");
             
@@ -404,10 +460,10 @@
                 };
 
                 audioRecorderInstance.start();
-                componentTriggerBtn.classList.add("recording");
+                componentTriggerBtn.classList.add("recording-pulse");
             } else {
                 audioRecorderInstance.stop();
-                componentTriggerBtn.classList.remove("recording");
+                componentTriggerBtn.classList.remove("recording-pulse");
             }
         };
 
@@ -422,9 +478,8 @@
             }]);
         }
 
-        // Invoke Edge Serverless Proxy Computations
         window.invokeEdgeFunction = async function(typeParameter) {
-            const filterSearchString = prompt(`Enter ${typeParameter === 'gif' ? 'Giphy design label' : 'iTunes audio search string'}:`);
+            const filterSearchString = prompt(`Enter ${typeParameter === 'gif' ? 'Giphy payload structural label' : 'iTunes sample track name'}:`);
             if(!filterSearchString) return;
 
             const { data, error } = await _client.functions.invoke("media-enrichment", {
@@ -436,16 +491,15 @@
             } else if (typeParameter === 'music' && data?.results?.[0]?.previewUrl) {
                 await commitPayloadToDatabase(data.results[0].trackName, "audio", data.results[0].previewUrl);
             } else {
-                alert("No matching network track items found.");
+                alert("No matching media tracks found.");
             }
             document.getElementById("media-menu").classList.add("hidden");
         };
 
-        // WebRTC Signaling Engine Real-Time Simulation Core Layers
         window.initiateWebRTCCall = async function(callType) {
             document.getElementById("call-panel").classList.remove("hidden");
-            document.getElementById("call-type-indicator").innerText = callType === "video" ? "📹" : "📞";
-            document.getElementById("call-status-string").innerText = "Assembling Signal Channels...";
+            document.getElementById("call-type-indicator").innerHTML = callType === "video" ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+            document.getElementById("call-status-string").innerText = "Establishing Media Links...";
             
             const layoutGridBox = document.getElementById("video-streams");
             if(callType === "video") {
@@ -464,14 +518,9 @@
                 
                 if(callType === "video") {
                     document.getElementById("local-video-track").srcObject = primaryMediaStreamTrack;
-                }
-
-                // Initialize standard loopback testing mock logic tracking peer configuration
-                document.getElementById("call-status-string").innerText = "Call routing channel connected";
-                
-                if(callType === "video") {
                     document.getElementById("remote-video-track").srcObject = primaryMediaStreamTrack;
                 }
+                document.getElementById("call-status-string").innerText = "Secure Uplink Connected";
             } catch(hardwareErr) {
                 alert("Hardware peripherals capture blocked: " + hardwareErr.message);
                 terminateActiveWebRTCCall();
@@ -492,17 +541,17 @@
             const audioTrack = primaryMediaStreamTrack.getAudioTracks()[0];
             if(audioTrack) {
                 audioTrack.enabled = !audioTrack.enabled;
-                document.getElementById("call-mute-btn").innerText = audioTrack.enabled ? "🎙️" : "🔇";
+                document.getElementById("call-mute-btn").classList.toggle("bg-red-500", !audioTrack.enabled);
+                document.getElementById("call-mute-btn").classList.toggle("text-white", !audioTrack.enabled);
             }
         };
 
-        // Interactive Mutations Data Elements Layers
         window.unpostPostedMessage = async function(id) {
             await _client.from("messages").update({ is_deleted: true, content: null, media_url: null, media_type: null }).eq("id", id);
         };
 
         window.modifyPostedMessage = async function(id) {
-            const revisedString = prompt("Enter revised message body contextual values:");
+            const revisedString = prompt("Enter revised message text:");
             if(!revisedString) return;
             await _client.from("messages").update({ content: revisedString, is_edited: true }).eq("id", id);
         };
@@ -516,18 +565,16 @@
         };
 
         window.createNewChannel = async function() {
-            const titleInput = prompt("Provide alphanumeric label room key text:");
+            const titleInput = prompt("Provide alpha-numeric workspace room label name:");
             if(!titleInput) return;
             await _client.from("channels").insert([{ name: titleInput, is_group: true }]);
             await populateSidebarChannels();
         };
 
-        // Modular UI Display Utility Controls helpers
         window.toggleElement = function(elementId) { document.getElementById(elementId).classList.toggle("hidden"); };
         window.openModal = function(modalId) { document.getElementById(modalId).classList.remove("hidden"); };
         window.closeModal = function(modalId) { document.getElementById(modalId).classList.add("hidden"); };
         
-        // Key binding interface fields to send textual data streams on entering keyboard elements
         document.addEventListener("keydown", (event) => {
             if (event.key === "Enter" && document.activeElement.id === "msg-field") {
                 const valueData = document.activeElement.value.trim();
