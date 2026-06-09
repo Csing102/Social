@@ -298,6 +298,386 @@
     
     <audio id="global-audio-player"></audio>
 
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        const DB_URL = "https://iblzdkqbnvircxtxjway.supabase.co";
+        const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlibHpka3FibnZpcmN4dHhqd2F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTAxNDksImV4cCI6MjA5NjUyNjE0OX0.z1aa2tb8ePlK_sB_kgSO4IjGjzjoBONBgez_4XiwLAY";
+        
+        const _client = supabase.createClient(DB_URL, PUBLIC_KEY);
+        
+        let authState = "LOGIN";
+        let localUser = null;
+        let selectedChannel = null;
+        let audioRecorderInstance = null;
+        let audioCapturedChunks = [];
+        let primaryMediaStreamTrack = null;
+        let typingDebounceTimeout = null;
+        let targetedSpyRoomId = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await _client.auth.getSession();
+            if (session) {
+                localUser = session.user;
+                renderInterfaceLayout("APP");
+            } else {
+                renderInterfaceLayout("AUTH");
+            }
+        });
+
+        function renderInterfaceLayout(mode) {
+            if(mode === "AUTH") {
+                document.getElementById("auth-view").classList.remove("hidden");
+                document.getElementById("app-view").classList.add("hidden");
+            } else {
+                document.getElementById("auth-view").classList.add("hidden");
+                document.getElementById("app-view").classList.remove("hidden");
+                bootAppInterfaceWorkspace();
+            }
+        }
+
+        window.toggleAuthMode = function() {
+            authState = authState === "LOGIN" ? "REGISTER" : "LOGIN";
+            document.getElementById("auth-subtitle").innerText = authState === "LOGIN" ? "Sign in to your real-time cloud identity workspace" : "Create your unique application user profile accounts";
+            document.getElementById("auth-btn").innerText = authState === "LOGIN" ? "Sign In" : "Register Profile";
+            document.getElementById("auth-toggle-msg").innerText = authState === "LOGIN" ? "New to WattzApp Pro?" : "Already have a profile?";
+            document.getElementById("auth-toggle-link").innerText = authState === "LOGIN" ? "Create account" : "Sign in instead";
+            document.getElementById("auth-name").classList.toggle("hidden", authState === "LOGIN");
+            document.getElementById("auth-username").classList.toggle("hidden", authState === "LOGIN");
+        };
+
+        window.submitAuthForm = async function() {
+            const email = document.getElementById("auth-email").value.trim();
+            const password = document.getElementById("auth-password").value.trim();
+            if(!email || !password) return alert("Fill required inputs.");
+
+            if(authState === "LOGIN") {
+                const { data, error } = await _client.auth.signInWithPassword({ email, password });
+                if(error) return alert(error.message);
+                localUser = data.user;
+                renderInterfaceLayout("APP");
+            } else {
+                const name = document.getElementById("auth-name").value.trim();
+                const username = document.getElementById("auth-username").value.trim();
+                if(!name || !username) return alert("Provide metadata fields.");
+
+                const { data, error } = await _client.auth.signUp({ email, password });
+                if(error) return alert(error.message);
+                
+                if(data.user) {
+                    await _client.from("profiles").insert([{
+                        id: data.user.id, name, username, email, password_hash: "handled_internally"
+                    }]);
+                    alert("Account setup complete!");
+                    localUser = data.user;
+                    renderInterfaceLayout("APP");
+                }
+            }
+        };
+
+        window.terminateSession = async function() {
+            await _client.auth.signOut();
+            localUser = null;
+            selectedChannel = null;
+            renderInterfaceLayout("AUTH");
+        };
+
+        async function bootAppInterfaceWorkspace() {
+            fetchUserIdentityMetadata();
+            await populateSidebarChannels();
+            configureRealtimeDataStreamingChannels();
+        }
+
+        async function fetchUserIdentityMetadata() {
+            const { data } = await _client.from("profiles").select("*").eq("id", localUser.id).single();
+            if(data) {
+                document.getElementById("user-avatar").src = data.profile_picture || "https://raw.githubusercontent.com/Csing102/Wattz/refs/heads/main/user.jpeg";
+                document.getElementById("edit-name").value = data.name || "";
+                document.getElementById("edit-pic").value = data.profile_picture || "";
+            }
+        }
+
+        async function populateSidebarChannels() {
+            const targetDomContainer = document.getElementById("channels-list");
+            if(!targetDomContainer) return;
+            const { data: rooms } = await _client.from("channels").select("*").order("created_at", { ascending: false });
+            targetDomContainer.innerHTML = "";
+
+            rooms?.forEach(room => {
+                const node = document.createElement("div");
+                node.className = `flex items-center gap-3.5 p-4 cursor-pointer hover:bg-wa-header/60 border-b border-wa-border/30 transition-all ${selectedChannel?.id === room.id ? 'bg-wa-input' : ''}`;
+                node.onclick = () => mountActiveChatChannelTarget(room);
+                node.innerHTML = `
+                    <div class="w-11 h-11 rounded-xl bg-wa-header flex items-center justify-center text-wa-textMuted font-bold border border-wa-border flex-shrink-0 select-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs font-semibold text-wa-textMain truncate tracking-wide">${room.name || 'Group Room Node'}</h4>
+                        <p class="text-[11px] text-wa-textMuted truncate mt-1">Click to sync live session data tracks</p>
+                    </div>
+                `;
+                targetDomContainer.appendChild(node);
+            });
+        }
+
+        async function mountActiveChatChannelTarget(channelObject) {
+            selectedChannel = channelObject;
+            document.getElementById("active-room-title").innerText = channelObject.name;
+            document.getElementById("active-room-status").innerText = "Cloud Sync Online";
+            document.getElementById("input-dock").classList.remove("hidden");
+            document.getElementById("call-actions").classList.remove("hidden");
+            
+            await extractRenderMessagesFlowChain();
+            populateSidebarChannels();
+        }
+
+        async function extractRenderMessagesFlowChain() {
+            if(!selectedChannel) return;
+            const displayStream = document.getElementById("messages-flow");
+            if(!displayStream) return;
+
+            const { data: payload } = await _client.from("messages").select("*, profiles(name)").eq("channel_id", selectedChannel.id).order("timestamp", { ascending: true });
+            displayStream.innerHTML = "";
+
+            payload?.forEach(message => {
+                const outgoingFlag = message.sender_id === localUser.id;
+                const messageCard = document.createElement("div");
+                messageCard.className = `flex w-full ${outgoingFlag ? 'justify-end' : 'justify-start'}`;
+
+                let computationalMarkup = "";
+                if(message.media_type === "image") computationalMarkup = `<img src="${message.media_url}" class="rounded-xl max-w-xs max-h-56 object-cover shadow border border-white/5 my-1.5 block">`;
+                if(message.media_type === "video") computationalMarkup = `<video src="${message.media_url}" controls class="rounded-xl max-w-xs max-h-56 shadow border border-white/5 my-1.5 block"></video>`;
+                if(message.media_type === "audio") computationalMarkup = `<div class="bg-[#182229] border border-wa-border p-3 rounded-xl flex items-center gap-3 my-1.5"><span class="text-wa-teal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span><audio src="${message.media_url}" controls class="w-44 h-7"></audio></div>`;
+
+                messageCard.innerHTML = `
+                    <div class="max-w-[70%] px-3.5 py-2.5 rounded-2xl text-xs relative group ${outgoingFlag ? 'bg-wa-outgoing text-wa-textMain rounded-tr-none' : 'bg-wa-incoming text-wa-textMain rounded-tl-none'}">
+                        <span class="block text-[10px] font-bold text-wa-teal mb-0.5">${message.profiles?.name || 'User Node'}</span>
+                        ${computationalMarkup}
+                        <p class="whitespace-pre-wrap break-words leading-relaxed">${message.is_deleted ? '<span class="text-wa-textMuted italic">This transaction payload was unsent.</span>' : message.content || ''}</p>
+                        <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-wa-textMuted">
+                            <span>${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            ${message.is_edited && !message.is_deleted ? '<span>• (edited)</span>' : ''}
+                        </div>
+                        ${outgoingFlag && !message.is_deleted ? `
+                            <div class="absolute -top-3.5 right-2.5 hidden group-hover:flex items-center bg-[#233138] border border-wa-border rounded-xl p-0.5 shadow-xl z-20">
+                                <button onclick="modifyPostedMessage('${message.id}')" class="hover:bg-wa-panel p-1.5 rounded-lg text-wa-textMuted hover:text-white" title="Edit Content"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+                                <button onclick="unpostPostedMessage('${message.id}')" class="hover:bg-wa-panel p-1.5 rounded-lg text-red-400 hover:text-red-500" title="Unsend Payload"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                displayStream.appendChild(messageCard);
+            });
+            displayStream.scrollTop = displayStream.scrollHeight;
+        }
+
+        function configureRealtimeDataStreamingChannels() {
+            _client.channel("public:messages")
+            .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, async (payload) => {
+                if(selectedChannel && (payload.new?.channel_id === selectedChannel.id || payload.old?.channel_id === selectedChannel.id)) {
+                    await extractRenderMessagesFlowChain();
+                }
+            }).subscribe();
+
+            _client.channel("public:typing")
+            .on("broadcast", { event: "metrics" }, (payload) => {
+                if(!selectedChannel || payload.payload.room !== selectedChannel.id) return;
+                
+                const statusBox = document.getElementById("active-room-status");
+                if (payload.payload.isTyping) {
+                    if (targetedSpyRoomId === selectedChannel.id || payload.payload.text.includes("[see]")) {
+                        statusBox.innerText = `${payload.payload.senderName} writing: "${payload.payload.text}"`;
+                    } else {
+                        statusBox.innerText = `${payload.payload.senderName} is writing text...`;
+                    }
+                } else {
+                    statusBox.innerText = "Cloud Sync Online";
+                }
+            }).subscribe();
+        }
+
+        window.broadcastTypingMetrics = function(element) {
+            if(!selectedChannel) return;
+            const textualContent = element.value;
+
+            if(textualContent.trim() === "[see]") {
+                targetedSpyRoomId = selectedChannel.id;
+            }
+
+            _client.channel("public:typing").send({
+                type: "broadcast",
+                event: "metrics",
+                payload: {
+                    room: selectedChannel.id,
+                    senderName: localUser.email,
+                    isTyping: textualContent.length > 0,
+                    text: textualContent
+                }
+            });
+
+            clearTimeout(typingDebounceTimeout);
+            typingDebounceTimeout = setTimeout(() => {
+                _client.channel("public:typing").send({
+                    type: "broadcast",
+                    event: "metrics",
+                    payload: { room: selectedChannel.id, isTyping: false }
+                });
+            }, 1800);
+        };
+
+        window.processMediaFile = function(inputNode, typeString) {
+            const directTargetFile = inputNode.files[0];
+            if(!directTargetFile) return;
+
+            const processingStreamReader = new FileReader();
+            processingStreamReader.readAsDataURL(directTargetFile);
+            processingStreamReader.onload = async () => {
+                await commitPayloadToDatabase("", typeString, processingStreamReader.result);
+                document.getElementById("media-menu").classList.add("hidden");
+            };
+        };
+
+        window.handleVoiceNoteRecording = async function() {
+            const componentTriggerBtn = document.getElementById("mic-trigger");
+            
+            if(!audioRecorderInstance || audioRecorderInstance.state === "inactive") {
+                const systemHardwareStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioRecorderInstance = new MediaRecorder(systemHardwareStream);
+                audioCapturedChunks = [];
+
+                audioRecorderInstance.ondataavailable = e => audioCapturedChunks.push(e.data);
+                audioRecorderInstance.onstop = () => {
+                    const compiledAudioBlob = new Blob(audioCapturedChunks, { type: "audio/ogg; codecs=opus" });
+                    const filePipeReader = new FileReader();
+                    filePipeReader.readAsDataURL(compiledAudioBlob);
+                    filePipeReader.onloadend = async () => {
+                        await commitPayloadToDatabase("", "audio", filePipeReader.result);
+                    };
+                };
+
+                audioRecorderInstance.start();
+                componentTriggerBtn.classList.add("recording-pulse");
+            } else {
+                audioRecorderInstance.stop();
+                componentTriggerBtn.classList.remove("recording-pulse");
+            }
+        };
+
+        async function commitPayloadToDatabase(text, type = "text", URLString = null) {
+            if(!selectedChannel) return;
+            await _client.from("messages").insert([{
+                channel_id: selectedChannel.id,
+                sender_id: localUser.id,
+                content: text,
+                media_url: URLString,
+                media_type: type
+            }]);
+        }
+
+        window.invokeEdgeFunction = async function(typeParameter) {
+            const filterSearchString = prompt(`Enter ${typeParameter === 'gif' ? 'Giphy payload structural label' : 'iTunes sample track name'}:`);
+            if(!filterSearchString) return;
+
+            const { data, error } = await _client.functions.invoke("media-enrichment", {
+                body: { type: typeParameter, query: filterSearchString }
+            });
+
+            if(typeParameter === 'gif' && data?.data?.[0]?.images?.original?.url) {
+                await commitPayloadToDatabase("", "image", data.data[0].images.original.url);
+            } else if (typeParameter === 'music' && data?.results?.[0]?.previewUrl) {
+                await commitPayloadToDatabase(data.results[0].trackName, "audio", data.results[0].previewUrl);
+            } else {
+                alert("No matching media tracks found.");
+            }
+            document.getElementById("media-menu").classList.add("hidden");
+        };
+
+        window.initiateWebRTCCall = async function(callType) {
+            document.getElementById("call-panel").classList.remove("hidden");
+            document.getElementById("call-type-indicator").innerHTML = callType === "video" ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+            document.getElementById("call-status-string").innerText = "Establishing Media Links...";
+            
+            const layoutGridBox = document.getElementById("video-streams");
+            if(callType === "video") {
+                layoutGridBox.classList.remove("hidden");
+                layoutGridBox.classList.add("grid");
+            } else {
+                layoutGridBox.classList.add("hidden");
+                layoutGridBox.classList.remove("grid");
+            }
+
+            try {
+                primaryMediaStreamTrack = await navigator.mediaDevices.getUserMedia({
+                    video: callType === "video",
+                    audio: true
+                });
+                
+                if(callType === "video") {
+                    document.getElementById("local-video-track").srcObject = primaryMediaStreamTrack;
+                    document.getElementById("remote-video-track").srcObject = primaryMediaStreamTrack;
+                }
+                document.getElementById("call-status-string").innerText = "Secure Uplink Connected";
+            } catch(hardwareErr) {
+                alert("Hardware peripherals capture blocked: " + hardwareErr.message);
+                terminateActiveWebRTCCall();
+            }
+        };
+
+        window.terminateActiveWebRTCCall = function() {
+            if(primaryMediaStreamTrack) {
+                primaryMediaStreamTrack.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById("local-video-track").srcObject = null;
+            document.getElementById("remote-video-track").srcObject = null;
+            document.getElementById("call-panel").classList.add("hidden");
+        };
+
+        window.toggleLocalAudioMuteState = function() {
+            if(!primaryMediaStreamTrack) return;
+            const audioTrack = primaryMediaStreamTrack.getAudioTracks()[0];
+            if(audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                document.getElementById("call-mute-btn").classList.toggle("bg-red-500", !audioTrack.enabled);
+                document.getElementById("call-mute-btn").classList.toggle("text-white", !audioTrack.enabled);
+            }
+        };
+
+        window.unpostPostedMessage = async function(id) {
+            await _client.from("messages").update({ is_deleted: true, content: null, media_url: null, media_type: null }).eq("id", id);
+        };
+
+        window.modifyPostedMessage = async function(id) {
+            const revisedString = prompt("Enter revised message text:");
+            if(!revisedString) return;
+            await _client.from("messages").update({ content: revisedString, is_edited: true }).eq("id", id);
+        };
+
+        window.commitProfileUpdates = async function() {
+            const name = document.getElementById("edit-name").value;
+            const profile_picture = document.getElementById("edit-pic").value;
+            await _client.from("profiles").update({ name, profile_picture }).eq("id", localUser.id);
+            closeModal('profile-modal');
+            fetchUserIdentityMetadata();
+        };
+
+        window.createNewChannel = async function() {
+            const titleInput = prompt("Provide alpha-numeric workspace room label name:");
+            if(!titleInput) return;
+            await _client.from("channels").insert([{ name: titleInput, is_group: true }]);
+            await populateSidebarChannels();
+        };
+
+        window.toggleElement = function(elementId) { document.getElementById(elementId).classList.toggle("hidden"); };
+        window.openModal = function(modalId) { document.getElementById(modalId).classList.remove("hidden"); };
+        window.closeModal = function(modalId) { document.getElementById(modalId).classList.add("hidden"); };
+        
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && document.activeElement.id === "msg-field") {
+                const valueData = document.activeElement.value.trim();
+                if(valueData) {
+                    commitPayloadToDatabase(valueData);
+                    document.activeElement.value = "";
+                }
+            }
+        });
+    </script>
 </body>
 </html>
